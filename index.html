@@ -92,12 +92,17 @@
                 </h1>
             </div>
             
-            <!-- Perubahan: HANYA menampilkan status update terakhir (dengan tanggal) -->
+            <!-- Status Update Terakhir (dengan icon refresh) -->
             <div id="refresh-status" class="text-right text-sm text-gray-500 min-w-[150px]">
-                <p id="last-update-time" class="font-medium text-gray-700">Terakhir diperbarui: -</p>
-                <!-- BARIS "Update berikutnya" DIHILANGKAN -->
+                <p class="font-medium text-gray-700 flex items-center justify-end">
+                    <!-- Icon Refresh -->
+                    <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw mr-1 text-orange-500">
+                        <path d="M3 2v6h6"/><path d="M21 12A9 9 0 0 0 6 5.3L3 8m18 0v-6h-6m-9 9a9 9 0 0 0 15 6.7L21 16"/>
+                    </svg>
+                    <!-- Text Update Terakhir -->
+                    <span id="last-update-time">Terakhir diperbarui: -</span>
+                </p>
             </div>
-            <!-- Akhir Perubahan -->
         </div>
     </header>
 
@@ -266,9 +271,9 @@
                                             <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">ID Sampel</th>
                                             <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Deskripsi Sampel</th>
                                             <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider min-w-[150px]">Alamat Sampel</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Status</th>
                                             <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider min-w-[120px]">Petugas (ID & Nama)</th>
                                             <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider min-w-[120px]">Pengawas (ID & Nama)</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody id="modal-sampel-list" class="bg-white divide-y divide-gray-200">
@@ -358,6 +363,26 @@
         const modalDeskripsi = document.getElementById('modal-deskripsi');
         
         const exportSummaryBtn = document.getElementById('export-summary-btn'); 
+        
+        // Elemen Pencarian BARU
+        const searchInput = document.createElement('input');
+        searchInput.id = 'survey-search-input';
+        searchInput.type = 'text';
+        searchInput.placeholder = 'Cari nama survei atau deskripsi...';
+        searchInput.className = 'w-full p-3 pl-10 mb-6 border border-gray-300 rounded-xl shadow-inner focus:ring-orange-500 focus:border-orange-500 transition duration-150';
+
+        // Container untuk Search Input
+        const searchContainer = document.createElement('div');
+        searchContainer.className = 'relative hidden'; // Sembunyikan default
+        searchContainer.innerHTML = `
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+        `;
+        searchContainer.appendChild(searchInput);
+
 
         // Elemen Tab Ringkasan
         const modalProgressIcon = document.getElementById('modal-progress-icon');
@@ -384,9 +409,9 @@
         const loadingIndicator = document.getElementById('loading-indicator');
         const errorMessage = document.getElementById('error-message');
 
-        // Elemen Status Refresh BARU
+        // Elemen Status Refresh
         const lastUpdateTimeElement = document.getElementById('last-update-time');
-        // const nextRefreshTimeElement = document.getElementById('next-refresh-time'); // Dihapus
+        const refreshIcon = document.getElementById('refresh-icon'); 
 
         // Elemen Kartu Fixed
         const floatingSummaryCard = document.getElementById('floating-summary');
@@ -399,15 +424,47 @@
         // --- FUNGSI UTILITAS GLOBAL ---
 
         // Fungsi penentuan status dan badge yang disesuaikan dengan CSS baru
-        function getSurveyOverallStatus(realisasi, target) {
-            if (target === 0) return { status: 'N/A', badge: 'status-na', priority: 4 }; // priority 4 for N/A
+        function getSurveyOverallStatus(realisasi, target, bulanMulai, bulanSelesai, currentMonth) {
+            // currentMonth = 0 menandakan survei ini tidak/belum relevan untuk pengecekan bulan (misal beda tahun)
+            
+            if (target === 0) return { status: 'N/A', badge: 'status-na', priority: 4 }; // N/A
             
             if (realisasi >= target) {
-                return { status: 'Selesai', badge: 'status-selesai', priority: 2 };
-            } else if (realisasi === 0) {
+                return { status: 'Selesai', badge: 'status-selesai', priority: 2 }; // Selesai (prioritas 2)
+            }
+
+            if (realisasi > 0) {
+                 // Sedang Berjalan (realisasi > 0 dan < target)
+                return { status: 'Sedang Berjalan', badge: 'status-berjalan', priority: 1 }; // Priority 1 (Paling penting)
+            }
+
+            // Jika realisasi === 0 (Belum Berjalan)
+            
+            // Jika survei ini bukan untuk tahun target (2026), kita tidak memberlakukan logika bulan
+            const TARGET_YEAR = 2026;
+            const surveyYear = allSurveysData.find(s => s.id === this.id)?.tahun_kegiatan;
+            const useEffectiveMonth = (parseInt(surveyYear, 10) === TARGET_YEAR);
+            if (!useEffectiveMonth) {
+                 return { status: 'Belum Berjalan', badge: 'status-belum', priority: 3 };
+            }
+
+            // Cek validitas bulan (Hanya jika ini tahun 2026)
+            const hasValidMonths = !isNaN(bulanMulai) && !isNaN(bulanSelesai) && bulanMulai > 0 && bulanSelesai <= 12 && bulanMulai <= bulanSelesai;
+
+            if (hasValidMonths) {
+                if (currentMonth >= bulanMulai && currentMonth <= bulanSelesai) {
+                    // Seharusnya sudah berjalan (karena realisasi 0), tapi belum.
+                    return { status: 'Belum Berjalan', badge: 'status-belum', priority: 3 }; 
+                } else if (currentMonth < bulanMulai) {
+                    // Belum waktunya
+                    return { status: 'Belum Berjalan', badge: 'status-belum', priority: 3 };
+                } else { 
+                    // currentMonth > bulanSelesai (Sudah lewat jadwal, dan belum dikerjakan)
+                    return { status: 'Belum Berjalan', badge: 'status-belum', priority: 3 };
+                }
+            } else {
+                // Fallback jika data bulan tidak valid
                 return { status: 'Belum Berjalan', badge: 'status-belum', priority: 3 };
-            } else { // realisasi > 0 and realisasi < target
-                return { status: 'Sedang Berjalan', badge: 'status-berjalan', priority: 1 };
             }
         }
         
@@ -499,13 +556,18 @@
                 lastUpdateTimeElement.textContent = `Terakhir diperbarui: ${formattedTime}`;
                 lastUpdateTimeElement.classList.remove('text-red-600');
                 lastUpdateTimeElement.classList.add('text-gray-700');
+                refreshIcon.classList.add('text-orange-500');
+                refreshIcon.classList.remove('text-red-500');
+
             } else {
                 lastUpdateTimeElement.textContent = `Terakhir diperbarui: GAGAL! (${formattedTime})`;
                 lastUpdateTimeElement.classList.remove('text-gray-700');
                 lastUpdateTimeElement.classList.add('text-red-600');
+                refreshIcon.classList.remove('text-orange-500');
+                refreshIcon.classList.add('text-red-500');
             }
-
-            // nextRefreshTimeElement.textContent = `Update berikutnya: ${nextTime.toLocaleTimeString('id-ID')}`; // Dihapus
+            
+            refreshIcon.classList.remove('animate-spin'); // <-- STOP SPIN
         }
         
         function startAutoRefresh() {
@@ -702,6 +764,9 @@
             
             let totalTargetTahunan = 0;
             let totalRealisasiTahunan = 0;
+            
+            const TARGET_YEAR = 2026;
+            const currentMonth = new Date().getMonth() + 1; // 1 (Jan) - 12 (Des)
 
             const structuredData = surveys.map(survey => {
                 const kategori = survey.kategori || 'Lain-lain';
@@ -738,7 +803,15 @@
                     });
                 
                 // Tambahkan properti status keseluruhan dan prioritas pengurutan
-                const overallStatus = getSurveyOverallStatus(realisasiSurvey, targetSurvey);
+                const bulanMulai = parseInt(survey.bulan_mulai, 10);
+                const bulanSelesai = parseInt(survey.bulan_selesai, 10);
+                const surveyYear = parseInt(survey.tahun_kegiatan, 10); // Asumsi ada kolom 'tahun_kegiatan'
+
+                // Tentukan apakah kita perlu mengecek bulan. Hanya jika tahun survei == 2026.
+                const useEffectiveMonth = (surveyYear === TARGET_YEAR);
+                const effectiveCurrentMonth = useEffectiveMonth ? currentMonth : 0; // Jika bukan 2026, kirim 0
+
+                const overallStatus = getSurveyOverallStatus.call(survey, realisasiSurvey, targetSurvey, bulanMulai, bulanSelesai, effectiveCurrentMonth);
 
                 return {
                     ...survey,
@@ -747,6 +820,7 @@
                     realisasi: realisasiSurvey, 
                     petugas: surveyPetugas,
                     sampel: surveySampel,
+                    status: overallStatus.status, // <- TAMBAHKAN INI
                     status_priority: overallStatus.priority, // Nilai 1, 2, 3, 4
                     status_badge: overallStatus.badge // Class CSS untuk badge
                 };
@@ -794,6 +868,8 @@
                 surveyListContainer.innerHTML = '';
             }
 
+            refreshIcon.classList.add('animate-spin'); // <-- START SPIN
+            
             try {
                 const [surveyRes, assignmentsRes, sampelRes, staffMasterRes] = await Promise.all([
                     fetch(SURVEYS_CSV_URL),
@@ -841,6 +917,11 @@
                 updateRefreshStatus(true); // Pembaruan status berhasil
 
                 if (isInitialLoad) {
+                    // Masukkan searchContainer ke dalam DOM
+                    surveyListContainer.parentElement.insertBefore(searchContainer, surveyListContainer);
+                    // Tambahkan event listener untuk filter
+                    searchInput.addEventListener('input', filterSurveys);
+                    
                     renderMainView(); 
                     loadingIndicator.style.display = 'none';
                     updateExportButtonVisibility(); 
@@ -866,6 +947,15 @@
 
         function setView(categoryName) {
             currentViewCategory = categoryName;
+            
+            if (categoryName !== null) {
+                searchContainer.classList.remove('hidden');
+                searchInput.value = ''; // Kosongkan input saat beralih kategori
+                filterSurveys(); // Panggil filter tanpa kata kunci untuk menampilkan semua
+            } else {
+                searchContainer.classList.add('hidden');
+            }
+            
             renderMainView();
             updateExportButtonVisibility(); 
         }
@@ -972,7 +1062,7 @@
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-3">
                             <div class="bg-${colors.primary} h-3 rounded-full" style="width: ${progress}%"></div>
-                        </div>
+                            </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4 text-base pt-4 border-t border-gray-100">
@@ -987,11 +1077,14 @@
             surveyListContainer.appendChild(cardsContainer);
         }
 
+        // Variabel untuk menyimpan survei yang sedang ditampilkan
+        let currentSurveysToRender = []; 
+
         function renderCategorySurveys(category) {
             surveyListContainer.innerHTML = '';
 
             const headerContainer = document.createElement('div');
-            headerContainer.className = 'flex items-center space-x-4 mb-8';
+            headerContainer.className = 'flex items-center space-x-4 mb-4'; // Kurangi margin bottom karena ada search box
             
             const backButton = document.createElement('button');
             backButton.className = 'text-gray-600 hover:text-orange-600 transition p-2 rounded-full hover:bg-gray-100';
@@ -1008,14 +1101,10 @@
             headerContainer.appendChild(categoryTitle);
             
             surveyListContainer.appendChild(headerContainer);
-
+            
+            // Filter survei berdasarkan kategori dan simpan di currentSurveysToRender
             let surveys = allSurveysData.filter(s => s.kategori === category);
             
-            if (surveys.length === 0) {
-                surveyListContainer.innerHTML += '<p class="text-gray-500 text-center mt-12">Tidak ada kegiatan survei dalam kategori ini.</p>';
-                return;
-            }
-
             // Pengurutan berdasarkan prioritas status (1=Berjalan, 2=Selesai, 3=Belum, 4=N/A)
             surveys.sort((a, b) => {
                 if (a.status_priority !== b.status_priority) {
@@ -1024,10 +1113,36 @@
                 // Jika prioritas sama, urutkan berdasarkan nama
                 return a.nama.localeCompare(b.nama);
             });
-
-            const cardsContainer = document.createElement('div');
-            cardsContainer.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8';
             
+            currentSurveysToRender = surveys; // Set data awal sebelum filter
+
+            // Div tempat kartu akan ditampilkan
+            const cardsContainer = document.createElement('div');
+            cardsContainer.id = 'survey-cards-container';
+            cardsContainer.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8';
+            surveyListContainer.appendChild(cardsContainer);
+
+            // Tampilkan survei awal (semua)
+            displaySurveys(currentSurveysToRender, category);
+
+            if (currentSurveysToRender.length === 0) {
+                // Tampilkan pesan "Tidak ada kegiatan" HANYA jika filter awal kosong
+                cardsContainer.innerHTML = '<p class="text-gray-500 text-center mt-12 md:col-span-3">Tidak ada kegiatan survei dalam kategori ini.</p>';
+                return;
+            }
+        }
+        
+        function displaySurveys(surveys, category) {
+            const cardsContainer = document.getElementById('survey-cards-container');
+            if (!cardsContainer) return;
+            
+            cardsContainer.innerHTML = '';
+
+            if (surveys.length === 0) {
+                 cardsContainer.innerHTML = '<p class="text-gray-500 text-center mt-12 md:col-span-3">Tidak ada kegiatan yang cocok dengan kata kunci pencarian.</p>';
+                 return;
+            }
+
             surveys.forEach(survey => {
                 const progress = calculateProgress(survey.realisasi, survey.target);
                 const colors = getCategoryColors(category);
@@ -1044,15 +1159,13 @@
                     <div class="p-6">
                         
                         <div class="flex justify-between items-start mb-2">
-                            <!-- PERBAIKAN: Menghapus truncate dari judul -->
                             <h3 class="text-xl font-bold text-${colors.darkText} mb-0 pr-2">${survey.nama}</h3>
                             <span class="status-badge ${survey.status_badge}">
-                                ${getSurveyOverallStatus(survey.realisasi, survey.target).status}
+                                ${survey.status}
                             </span>
                         </div>
                         
                         <p class="text-xs font-semibold text-gray-500 mb-1">Jadwal Kegiatan:</p>
-                        <!-- Deskripsi kegiatan dibiarkan penuh, tidak ada elipsis -->
                         <p class="text-base font-medium text-gray-700 mb-4">${survey.deskripsi}</p> 
                         
                         <div class="mb-4">
@@ -1084,7 +1197,21 @@
                 
                 cardsContainer.appendChild(surveyCard);
             });
-            surveyListContainer.appendChild(cardsContainer);
+        }
+        
+        function filterSurveys() {
+            if (currentViewCategory === null) return;
+
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const filteredSurveys = currentSurveysToRender.filter(survey => {
+                const name = survey.nama.toLowerCase();
+                const description = survey.deskripsi.toLowerCase();
+                
+                return name.includes(searchTerm) || description.includes(searchTerm);
+            });
+
+            // Tampilkan hasil filter
+            displaySurveys(filteredSurveys, currentViewCategory);
         }
         
         function showSurveyDetails(surveyId) {
@@ -1182,9 +1309,6 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">${s.id}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${s.deskripsi}</td>
                             <td class="px-6 py-4 text-sm text-gray-700 max-w-xs truncate">${s.alamat || '-'}</td>
-                            <td class="px-6 py-4 text-sm text-gray-700">${petugasDisplay}</td>
-                            
-                            <td class="px-6 py-4 text-sm text-gray-700">${pengawasDisplay}</td>
                             
                             <!-- Menggunakan class CSS baru (status-badge) untuk Sampel -->
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
@@ -1192,6 +1316,9 @@
                                     ${s.status}
                                 </span>
                             </td>
+
+                            <td class="px-6 py-4 text-sm text-gray-700">${petugasDisplay}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">${pengawasDisplay}</td>
                         </tr>
                     `;
                 });
