@@ -15,7 +15,11 @@
         /* Mengatur font default dan latar belakang yang lebih menarik */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f7f9fc; /* Latar belakang yang lebih cerah dan halus */
+            /* background-color: #f7f9fc; Latar belakang yang lebih cerah dan halus */
+            
+            /* Latar belakang gradient yang lebih modern */
+            background-color: #f8fafc; /* slate-50 */
+            background-image: linear-gradient(to bottom, #f8fafc, #f1f5f9); /* slate-50 to slate-100 */
         }
         /* Style untuk modal */
         #detail-modal.hidden {
@@ -139,14 +143,14 @@
             </div>
             
             <!-- Status Update Terakhir (dengan icon refresh) -->
-            <div id="refresh-status" class="text-right text-sm text-gray-500 min-w-[150px]">
-                <p class="font-medium text-gray-700 flex items-center justify-end">
+            <div id="refresh-status" class="text-right min-w-[150px]">
+                <p id="refresh-badge" class="inline-flex items-center justify-center text-sm font-medium bg-slate-100 border border-slate-200 rounded-full px-4 py-2 shadow-sm transition-all hover:shadow-md hover:bg-white">
                     <!-- Icon Refresh -->
-                    <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw mr-1 text-orange-500">
+                    <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw mr-2 text-orange-500">
                         <path d="M3 2v6h6"/><path d="M21 12A9 9 0 0 0 6 5.3L3 8m18 0v-6h-6m-9 9a9 9 0 0 0 15 6.7L21 16"/>
                     </svg>
                     <!-- Text Update Terakhir -->
-                    <span id="last-update-time">Terakhir diperbarui: -</span>
+                    <span id="last-update-time" class="text-gray-700">Terakhir diperbarui: -</span>
                 </p>
             </div>
         </div>
