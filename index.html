@@ -12,35 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Mengatur font default dan latar belakang yang lebih menarik */
-        body {
-            font-family: 'Inter', sans-serif;
-            /* background-color: #f7f9fc; Latar belakang yang lebih cerah dan halus */
-            
-            /* Latar belakang gradient yang lebih modern */
-            background-color: #f8fafc; /* slate-50 */
-            background-image: linear-gradient(to bottom, #f8fafc, #f1f5f9); /* slate-50 to slate-100 */
-        }
-        /* Style untuk modal */
-        #detail-modal.hidden {
-            display: none;
-        }
-        
-        /* Style untuk tab utama (Navigasi View) */
-        .main-nav-button {
-            transition: all 0.3s ease;
-            border-bottom-width: 4px;
-            border-color: transparent;
-        }
-        .main-nav-button.active {
-            border-color: #EA580C; /* orange-600 */
-            color: #EA580C;
-            font-weight: 700;
-        }
-        .main-nav-button:not(.active):hover {
-            border-color: #fdba74; /* orange-300 */
-            color: #c2410c; /* orange-700 */
-        }
+        /* ... existing code (body, modal, main-nav-button styles) ... */
         
         /* Style untuk tab modal */
         .tab-button.active {
@@ -49,7 +21,7 @@
             font-weight: 600;
         }
         
-        /* Efek interaktif untuk kartu survei (mengangkat kartu saat di-hover) */
+        /* Efek interaktif untuk kartu survei */
         .card-interactive {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -58,1244 +30,86 @@
             box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
-        /* START Style Badge Status yang Lebih Menonjol */
+        /* START Style Badge Status */
         .status-badge {
-            padding: 0.3rem 0.7rem; /* Padding sedikit lebih besar */
-            font-size: 0.8rem; /* Font size lebih besar dari text-xs */
-            font-weight: 700; /* Font bold */
-            border-radius: 9999px; /* rounded-full */
+            padding: 0.3rem 0.7rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border-radius: 9999px;
             text-transform: uppercase;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* subtle shadow */
-            border-width: 1px; /* Tambahkan border */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border-width: 1px;
         }
-
-        /* Penyesuaian warna untuk status */
-        .status-selesai {
-            background-color: #ECFDF5; /* green-50 */
-            color: #059669; /* green-600 */
-            border-color: #34D399; /* green-400 */
-        }
-        .status-berjalan {
-            background-color: #FFFBEB; /* yellow-50 */
-            color: #F59E0B; /* yellow-600 */
-            border-color: #FCD34D; /* yellow-400 */
-        }
-        .status-belum {
-            background-color: #FEF2F2; /* red-50 */
-            color: #EF4444; /* red-600 */
-            border-color: #F87171; /* red-400 */
-        }
-        .status-na {
-            background-color: #E5E7EB; /* gray-200 */
-            color: #374151; /* gray-700 */
-            border-color: #9CA3AF; /* gray-400 */
-        }
+        /* ... existing status colors ... */
+        .status-selesai { background-color: #ECFDF5; color: #059669; border-color: #34D399; }
+        .status-berjalan { background-color: #FFFBEB; color: #F59E0B; border-color: #FCD34D; }
+        .status-belum { background-color: #FEF2F2; color: #EF4444; border-color: #F87171; }
+        .status-na { background-color: #E5E7EB; color: #374151; border-color: #9CA3AF; }
         /* END Style Badge Status */
         
-        /* Style untuk Kartu Snapshot */
+        /* --- UPDATE: Style Kartu Snapshot Baru --- */
         .snapshot-card {
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
+        .snapshot-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Garis aksen di atas kartu */
+        .snapshot-accent-bar {
+            height: 6px;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
         .snapshot-card-icon {
-            width: 40px; /* Diubah dari 48px menjadi 40px agar pas tanpa padding */
-            height: 40px;
-            min-width: 40px;
-            min-height: 40px;
+            width: 42px;
+            height: 42px;
+            opacity: 0.9;
         }
-        .snapshot-card-value {
-            font-size: 2.5rem; /* 40px */
-            line-height: 1;
-            font-weight: 800; /* extrabold */
-        }
-        .snapshot-card-change.positive {
-            color: #16A34A; /* green-600 */
-            background-color: #DCFCE7; /* green-100 */
-        }
-        .snapshot-card-change.negative {
-            color: #DC2626; /* red-600 */
-            background-color: #FEE2E2; /* red-100 */
-        }
-        .snapshot-card-change.neutral {
-            color: #52525B; /* zinc-600 */
-            background-color: #F4F4F5; /* zinc-100 */
+
+        /* Label Status (Tumbuh/Kontraksi) */
+        .snapshot-status-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 4px;
         }
     </style>
 </head>
-<body class="min-h-screen">
+<!-- ... existing code (body, header, nav, loading indicators) ... -->
 
-    <!-- Header -->
-    <header class="bg-white shadow-lg sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center space-x-4">
-            <div class="flex items-center space-x-4">
-                <!-- Logo Header (Grid) -->
-                <svg class="h-12 w-12 text-orange-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect width="7" height="9" x="3" y="3" rx="1"/>
-                    <rect width="7" height="5" x="14" y="3" rx="1"/>
-                    <rect width="7" height="9" x="14" y="12" rx="1"/>
-                    <rect width="7" height="5" x="3" y="16" rx="1"/>
-                </svg>
-                
-                <h1 class="text-3xl font-extrabold tracking-tight text-gray-900">
-                    <span class="leading-snug">
-                        Sistem Monitoring Produksi <br> BPS Kabupaten Belitung
-                    </span>
-                </h1>
-            </div>
-            
-            <!-- Status Update Terakhir (dengan icon refresh) -->
-            <div id="refresh-status" class="text-right min-w-[150px]">
-                <p id="refresh-badge" class="inline-flex items-center justify-center text-sm font-medium bg-slate-100 border border-slate-200 rounded-full px-4 py-2 shadow-sm transition-all hover:shadow-md hover:bg-white">
-                    <!-- Icon Refresh (Diganti dengan Icon Jam/History yang lebih menarik) -->
-                    <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-orange-600">
-                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                        <path d="M3 3v5h5"/>
-                        <path d="M12 7v5l4 2"/>
-                    </svg>
-                    <!-- Text Update Terakhir -->
-                    <span id="last-update-time" class="text-gray-700">Terakhir diperbarui: -</span>
-                </p>
-            </div>
-        </div>
-        
-        <!-- Navigasi Utama (View Switcher) -->
-        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-gray-200">
-            <div class="flex space-x-10">
-                <button id="monitoring-view-btn" 
-                        class="main-nav-button active py-4 px-1 text-lg font-medium text-gray-600">
-                    Monitoring Survei
-                </button>
-                <button id="snapshot-view-btn" 
-                        class="main-nav-button py-4 px-1 text-lg font-medium text-gray-600">
-                    Snapshot Triwulanan
-                </button>
-            </div>
-        </nav>
-    </header>
-
-    <!-- Konten Utama -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        <!-- Indikator Loading Global -->
-        <div id="loading-indicator" class="text-center py-16 bg-white rounded-xl shadow-md">
-            <svg class="animate-spin h-8 w-8 text-orange-600 mx-auto mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <p id="loading-text" class="text-lg text-gray-600">Memuat data monitoring...</p>
-        </div>
-        
-        <!-- Pesan Error Global -->
-        <div id="error-message" class="hidden text-center py-10 bg-red-100 rounded-xl border-2 border-red-400 shadow-md">
-            <p id="error-title" class="text-xl font-medium text-red-700">Gagal memuat data!</p>
-            <p id="error-details" class="text-base text-red-600 mt-2">Periksa kembali URL Google Sheet dan pastikan sudah dipublikasikan.</p>
-        </div>
-
-        <!-- Kontainer View Monitoring Survei -->
-        <div id="monitoring-view">
-            <!-- Judul Dinamis & Konten Survei -->
-            <div id="survey-list">
-                <!-- Konten (Kartu Kategori atau Daftar Survei) akan dimuat oleh JavaScript -->
-            </div>
-        </div>
-        
-        <!-- Kontainer View Snapshot Triwulanan (Hidden by default) -->
-        <div id="snapshot-view" class="hidden">
-            <!-- Header Snapshot (Judul & Dropdown) -->
-            <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
-                <h2 class="text-3xl font-extrabold text-gray-800">
-                    Snapshot Perekonomian Triwulanan
-                </h2>
-                <div class="flex-shrink-0">
-                    <label for="snapshot-quarter-select" class="text-sm font-medium text-gray-700 mr-2">Pilih Periode:</label>
-                    <select id="snapshot-quarter-select" 
-                            class="w-full md:w-auto p-3 border border-gray-300 rounded-xl shadow-sm focus:ring-orange-500 focus:border-orange-500 transition duration-150">
-                        <!-- Opsi (dibuat 'vs' agar lebih jelas) -->
-                        <option value="q1_2026_vs_q4_2025">Q1-2026 vs Q4-2025</option>
-                        <option value="q2_2026_vs_q1_2026">Q2-2026 vs Q1-2026</option>
-                        <option value="q3_2026_vs_q2_2026">Q3-2026 vs Q2-2026</option>
-                        <option value="q4_2026_vs_q3_2026">Q4-2026 vs Q3-2026</option>
-                    </select>
-                </div>
-            </div>
-            
-            <!-- Kontainer Kartu Snapshot -->
-            <div id="snapshot-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- Kartu Snapshot akan dimuat oleh JavaScript -->
-            </div>
-        </div>
-        
-    </main>
-    
-    <!-- Tombol Export Ringkasan Floating -->
-    <button id="export-summary-btn" 
-            title="Export Ringkasan Survei ke CSV"
-            class="fixed bottom-4 left-4 
-                   bg-indigo-600 hover:bg-indigo-700 text-white 
-                   px-4 py-3 rounded-xl shadow-2xl transition duration-300 ease-in-out transform 
-                   flex items-center space-x-2 z-50 hover:scale-[1.03] hidden">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text">
-            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/>
-            <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
-            <path d="M10 9H8"/>
-            <path d="M16 13H8"/>
-            <path d="M16 17H8"/>
-        </svg>
-        <span class="font-semibold">Export Data</span>
-    </button>
-    <!-- END: Tombol Export Ringkasan Floating -->
-
-    <!-- Modal Detail Survei (Tidak Berubah) -->
-    <div id="detail-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 transition-opacity" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            
-            <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col transform transition-all">
-                <!-- Header Modal - bg diubah menjadi orange-50 -->
-                <div class="flex justify-between items-center p-6 border-b border-gray-200 bg-orange-50 rounded-t-xl">
-                    <h2 id="modal-title" class="text-2xl font-bold text-gray-900">Judul Survei</h2>
-                    <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                
-                <!-- Konten Modal (dengan Tab) -->
-                <div class="flex-grow p-6 overflow-y-auto">
-                    <!-- Navigasi Tab -->
-                    <div class="border-b border-gray-200 mb-6 flex justify-between items-center">
-                        <nav id="modal-tabs" class="flex space-x-8 -mb-px" aria-label="Tabs">
-                            <button data-tab="ringkasan" class="tab-button active whitespace-nowrap py-3 px-1 border-b-2 font-medium text-base">
-                                Ringkasan
-                            </button>
-                            <button data-tab="petugas" class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-base text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                                Petugas Terlibat
-                            </button>
-                            <button data-tab="sampel" class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-base text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                                Daftar Sampel
-                            </button>
-                        </nav>
-                        
-                        <!-- Tombol Export hanya muncul di Tab Sampel, dikontrol oleh JS -->
-                        <button id="export-sampel-btn" 
-                            class="hidden bg-green-600 hover:bg-green-700 text-white text-sm font-semibold py-2 px-4 rounded-lg 
-                                   shadow-md transition duration-300 ease-in-out transform hover:scale-[1.02] 
-                                   flex items-center space-x-2">
-                            <!-- Icon Excel -->
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-spreadsheet">
-                                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/>
-                                <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
-                                <path d="M8 12h8"/>
-                                <path d="M8 16h8"/>
-                                <path d="M8 20h8"/>
-                                <path d="M12 10v12"/>
-                            </svg>
-                            <span>Export ke CSV</span>
-                        </button>
-                    </div>
-
-                    <!-- Panel Tab -->
-                    <div>
-                        <!-- Tab Ringkasan -->
-                        <div id="tab-ringkasan" class="tab-content">
-                            <!-- Label Jadwal / Deskripsi Kegiatan -->
-                            <h3 class="text-lg font-bold text-gray-900 mb-2">Jadwal / Deskripsi Kegiatan</h3> 
-                            <p id="modal-deskripsi" class="text-gray-600 mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200"></p>
-                            
-                            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                                <svg id="modal-progress-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-7-8a7 7 0 1114 0 7 7 0 01-14 0zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                                </svg>
-                                Progress Realisasi (Keseluruhan)
-                            </h3>
-                            <div class="flex justify-between items-center mb-2">
-                                <span id="modal-progress-text-label" class="text-base font-semibold text-orange-700">Realisasi vs Target</span>
-                                <span id="modal-progress-text" class="text-base font-semibold text-gray-700">0 / 0</span>
-                            </div>
-                            <div id="modal-progress-wrapper" class="w-full bg-orange-100 rounded-full h-4 shadow-inner">
-                                <div id="modal-progress-bar" class="bg-orange-600 h-4 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                                <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-lg">
-                                    <dt class="text-sm font-medium text-gray-500 truncate flex items-center">
-                                        <span class="text-orange-500 mr-2">🎯</span> Target
-                                    </dt>
-                                    <dd id="modal-target" class="mt-1 text-3xl font-extrabold text-gray-900">0</dd>
-                                </div>
-                                <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-lg">
-                                    <dt class="text-sm font-medium text-gray-500 truncate flex items-center">
-                                        <span class="text-green-500 mr-2">✅</span> Realisasi
-                                    </dt>
-                                    <dd id="modal-realisasi" class="mt-1 text-3xl font-extrabold text-green-600">0</dd>
-                                </div>
-                                <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-lg">
-                                    <dt class="text-sm font-medium text-gray-500 truncate flex items-center">
-                                        <span class="text-red-500 mr-2">🕒</span> Sisa
-                                    </dt>
-                                    <dd id="modal-sisa" class="mt-1 text-3xl font-extrabold text-red-600">0</dd>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Tab Petugas -->
-                        <div id="tab-petugas" class="tab-content hidden">
-                            <div class="overflow-x-auto rounded-lg shadow-md border border-gray-200">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-100">
-                                        <tr>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Petugas (Nama & ID)</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Peran</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Status</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider min-w-[200px]">Progress (Realisasi/Target)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="modal-petugas-list" class="bg-white divide-y divide-gray-200">
-                                        <!-- Data petugas dimuat JS -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        
-                        <!-- Tab Sampel -->
-                        <div id="tab-sampel" class="tab-content hidden">
-                            <!-- Tabel Sampel harus memiliki ID untuk diekspor -->
-                            <div class="overflow-x-auto rounded-lg shadow-md border border-gray-200">
-                                <table id="sampel-table" class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-100">
-                                        <tr>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">ID Sampel</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Deskripsi Sampel</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider min-w-[150px]">Alamat Sampel</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Status</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider min-w-[120px]">Petugas (ID & Nama)</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider min-w-[120px]">Pengawas (ID & Nama)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="modal-sampel-list" class="bg-white divide-y divide-gray-200">
-                                        <!-- Data sampel dimuat JS -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Kartu Ringkasan Mengambang (FIXED) -->
-    <div id="floating-summary" 
-         class="fixed bottom-4 right-4 
-                bg-white p-5 
-                max-w-xs w-full 
-                rounded-xl shadow-2xl 
-                border-t-4 border-emerald-500 
-                z-50 hidden 
-                transform transition duration-300 hover:scale-[1.02]">
-        
-        <div class="flex justify-between items-start mb-3">
-            <h2 class="text-lg font-bold text-gray-800">Ringkasan Ekspor</h2>
-            <button id="close-floating-summary-btn" class="text-gray-400 hover:text-gray-700">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-            </button>
-        </div>
-        
-        <div class="space-y-2 text-sm mb-4">
-            <div class="flex justify-between">
-                <span class="text-gray-500">Status:</span>
-                <span id="summary-status" class="font-semibold text-emerald-600">Selesai</span>
-            </div>
-            <div class="flex justify-between">
-                <span class="text-gray-500">Total Baris:</span>
-                <span id="summary-total-data" class="font-medium text-gray-700">0 baris</span>
-            </div>
-            <div class="flex justify-between">
-                <span class="text-gray-500">Waktu Proses:</span>
-                <span id="summary-time-elapsed" class="font-medium text-gray-700">0.0 detik</span>
-            </div>
-        </div>
-
-        <button id="download-summary-btn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white 
-                       font-semibold py-2 px-4 rounded-lg 
-                       transition duration-200 shadow-md hover:shadow-lg">
-            Unduh File Ringkasan
-        </button>
-
-    </div>
-    <!-- END: Kartu Ringkasan Mengambang -->
-    
-    <!-- SVG Icons Definitions (untuk Snapshot) -->
-    <svg width="0" height="0" class="hidden">
-      <defs>
-        <svg id="icon-pangan" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h3l7-12 7 12h3L13 2Z"/><path d="M10.3 14 3 22h18L10.3 14Z"/><path d="M16 14h-3L10.3 14"/></svg>
-        <svg id="icon-lainnya" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c0-3.3 2.7-6 6-6s6 2.7 6 6-2.7 6-6 6-6-2.7-6-6Z"/><path d="M12 12c0-3.3 2.7-6 6-6s6 2.7 6 6-2.7 6-6 6-6-2.7-6-6Z"/></svg>
-        <svg id="icon-rph" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.8 19.4c-1.4.9-3.2.3-3.7-1.1L3 13.1c-.5-1.4.1-3.2 1.5-3.7L10 7.6c1.4-.5 3.2.1 3.7 1.5l3.1 5.2c.5 1.4-.1 3.2-1.5 3.7l-5.5 1.8Z"/><path d="M8.6 13.8a.5.5 0 0 0-.8-.4l-1.6.9a.5.5 0 0 0-.4.8l1.6.9c.3.2.7 0 .8-.4l.4-1.8Z"/><path d="m19 12 1.8-3.1c.5-1.4-.1-3.2-1.5-3.7L13.8 3c-1.4-.5-3.2.1-3.7 1.5L8.4 8"/></svg>
-        <svg id="icon-ikan" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.1 13c.2.2.3.5.3.8 0 .8-.5 1.2-1 1.2s-1-.4-1-1.2c0-.3.1-.6.3-.8l4-4C13.2 8.5 14 8 15 8s1.8.5 2.3 1l4-4c.4-.4.4-1 0-1.4s-1-.4-1.4 0l-4 4c-.5-.4-1.3-.9-2.3-.9s-1.8.5-2.3 1l-4-4C7 3.1 6.3 3.1 5.9 3.5s-.4 1 0 1.4l4 4c-.5.4-1.3.9-2.3.9s-1.8-.5-2.3-1l-4 4C.9 12.3.9 13 1.3 13.4s1 .4 1.4 0l4-4c.5.4 1.3.9 2.3.9s1.8-.5 2.3-1l4 4Z"/></svg>
-        <svg id="icon-tambang" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10Z"/><path d="M12 2v6h6"/><path d="M10 13a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/><path d="m14 17-2-2-2 2"/><path d="m10 17 2-2 2 2"/></svg>
-        <svg id="icon-gali" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 22H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2Z"/><path d="M12 17a3 3 0 0 0 3-3V8a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/></svg>
-        <svg id="icon-cpo" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-7-6.5-7-12.5a7 7 0 0 1 14 0c0 6-7 12.5-7 12.5Z"/><path d="M12 12a2.5 2.5 0 0 0 0-5 2.5 2.5 0 0 0 0 5Z"/></svg>
-        <svg id="icon-mamin" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M16 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M8 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M20 16.5v-3.4a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 1-.4-.5v-1.6a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 1-.4-.5V6.6a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 0-.8 0l-2.7.9a.6.6 0 0 0-.4.5v1.6a.6.6 0 0 1-.4.5l-2.7.9a.6.6 0 0 0-.4.5v3.4a.6.6 0 0 0 .4.5l2.7.9a.6.6 0 0 1 .4.5v1.6a.6.6 0 0 0 .4.5l2.7.9a.6.6 0 0 1 .8 0l2.7-.9a.6.6 0 0 0 .4-.5v-1.6a.6.6 0 0 1 .4-.5l2.7-.9a.6.6 0 0 0 .4-.5Z"/></svg>
-      </defs>
-    </svg>
-
+<!-- ... existing code (main content until script) ... -->
 
     <script>
-        // --- KONFIGURASI GOOGLE SHEET & AUTO REFRESH ---
-        // URL CSV Anda telah terisi dengan data contoh yang sebelumnya diberikan.
-        const SURVEYS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV7Yuu82zCho9LP8-w2M7KdcHesZMG2ZkE0h7luPscpkbYYgqC1HVmE9f95zT17Wy3Z3ktg3g5h0ks/pub?gid=0&single=true&output=csv';
-        const SAMPEL_CSV_URL =  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV7Yuu82zCho9LP8-w2M7KdcHesZMG2ZkE0h7luPscpkbYYgqC1HVmE9f95zT17Wy3Z3ktg3g5h0ks/pub?gid=1637428951&single=true&output=csv';
-        const ASSIGNMENTS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV7Yuu82zCho9LP8-w2M7KdcHesZMG2ZkE0h7luPscpkbYYgqC1HVmE9f95zT17Wy3Z3ktg3g5h0ks/pub?gid=2028943161&single=true&output=csv';
-        const STAFF_MASTER_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV7Yuu82zCho9LP8-w2M7KdcHesZMG2ZkE0h7luPscpkbYYgqC1HVmE9f95zT17Wy3Z3ktg3g5h0ks/pub?gid=824879186&single=true&output=csv';
+        // ... existing code (CSV URLs, Variables, utility functions) ...
         
-        // --- BARU: URL UNTUK DATA SNAPSHOT TRIWULANAN ---
-        // PENTING: GANTI '123456789' DENGAN GID SHEET DATA SNAPSHOT ANDA YANG SEBENARNYA
-        // Sheet ini harus memiliki kolom: id_kegiatan, nama_kegiatan, icon_id, unit, q4_2025, q1_2026, q2_2026, q3_2026, q4_2026
-        const SNAPSHOT_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV7Yuu82zCho9LP8-w2M7KdcHesZMG2ZkE0h7luPscpkbYYgqC1HVmE9f95zT17Wy3Z3ktg3g5h0ks/pub?gid=396773127&single=true&output=csv';
-        // --- END BARU ---
-
+        // ... existing code (fetchMonitoringData function) ...
         
-        // Interval refresh otomatis (dalam milidetik) - 180000ms = 3 menit
-        const REFRESH_INTERVAL_MS = 180000; 
+        // ... existing code (fetchSnapshotData function) ...
+
+        // ... existing code (buildStructuredData, getCategoryColors functions) ...
+
+        // ... existing code (view switching logic) ...
+
+        // ... existing code (render monitoring logic) ...
         
-        // --- GLOBAL STATE & DATA ---
-        let currentMainView = 'monitoring'; // 'monitoring' atau 'snapshot'
+        // ... existing code (render modal logic) ...
         
-        // Data Monitoring
-        let allSurveysData = [];
-        let currentViewCategory = null; // null = Dashboard Kategori, string = Nama Kategori
-        const MAIN_CATEGORIES = ['Statistik PEK', 'Statistik Industri', 'Statistik Pertanian'];
-        let allStaffMap = {};
-        let annualSummary = { totalTarget: 0, totalRealisasi: 0 };
-        
-        // Data Snapshot
-        let allSnapshotData = [];
-        let currentQuarterSelection = 'q1_2026_vs_q4_2025'; // Nilai default dropdown
-        let isSnapshotDataFetched = false;
-
-        // Status
-        let refreshTimer = null;
-        let lastUpdateTimestamp = null;
-
-
-        // --- ELEMEN DOM (Monitoring) ---
-        const monitoringView = document.getElementById('monitoring-view');
-        const surveyListContainer = document.getElementById('survey-list');
-        const modal = document.getElementById('detail-modal');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const modalTitle = document.getElementById('modal-title');
-        const modalDeskripsi = document.getElementById('modal-deskripsi');
-        const exportSummaryBtn = document.getElementById('export-summary-btn'); 
-        
-        // (Elemen Pencarian akan dibuat secara dinamis nanti)
-        let searchInput = null;
-        let searchContainer = null;
-
-        // Elemen Tab Ringkasan Modal
-        const modalProgressIcon = document.getElementById('modal-progress-icon');
-        const modalProgressTextLabel = document.getElementById('modal-progress-text-label');
-        const modalProgressWrapper = document.getElementById('modal-progress-wrapper');
-        const modalProgressText = document.getElementById('modal-progress-text');
-        const modalProgressBar = document.getElementById('modal-progress-bar');
-        const modalTarget = document.getElementById('modal-target');
-        const modalRealisasi = document.getElementById('modal-realisasi');
-        const modalSisa = document.getElementById('modal-sisa');
-
-        // Elemen Tab Petugas & Sampel Modal
-        const modalPetugasList = document.getElementById('modal-petugas-list');
-        const modalSampelList = document.getElementById('modal-sampel-list');
-        const sampelTable = document.getElementById('sampel-table'); 
-        const modalTabs = document.getElementById('modal-tabs');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const exportSampelBtn = document.getElementById('export-sampel-btn'); 
-
-        // --- ELEMEN DOM (Global & Navigasi) ---
-        const loadingIndicator = document.getElementById('loading-indicator');
-        const loadingText = document.getElementById('loading-text');
-        const errorMessage = document.getElementById('error-message');
-        const errorTitle = document.getElementById('error-title');
-        const errorDetails = document.getElementById('error-details');
-        const lastUpdateTimeElement = document.getElementById('last-update-time');
-        const refreshIcon = document.getElementById('refresh-icon'); 
-        const monitoringViewBtn = document.getElementById('monitoring-view-btn');
-        const snapshotViewBtn = document.getElementById('snapshot-view-btn');
-
-        // --- ELEMEN DOM (Snapshot) ---
-        const snapshotView = document.getElementById('snapshot-view');
-        const snapshotQuarterSelect = document.getElementById('snapshot-quarter-select');
-        const snapshotCardsContainer = document.getElementById('snapshot-cards-container');
-
-        // Elemen Kartu Fixed
-        const floatingSummaryCard = document.getElementById('floating-summary');
-        const closeFloatingSummaryBtn = document.getElementById('close-floating-summary-btn');
-        const summaryStatus = document.getElementById('summary-status');
-        const summaryTotalData = document.getElementById('summary-total-data');
-        const summaryTimeElapsed = document.getElementById('summary-time-elapsed');
-        const downloadSummaryBtn = document.getElementById('download-summary-btn');
-        
-        // --- FUNGSI UTILITAS GLOBAL (Tidak berubah) ---
-
-        function getSurveyOverallStatus(realisasi, target, bulanMulai, bulanSelesai, currentMonth) {
-            if (target === 0) return { status: 'N/A', badge: 'status-na', priority: 4 }; // N/A
-            if (realisasi >= target) return { status: 'Selesai', badge: 'status-selesai', priority: 2 }; 
-            if (realisasi > 0) return { status: 'Sedang Berjalan', badge: 'status-berjalan', priority: 1 };
-            
-            // Logika untuk 'Belum Berjalan' (realisasi === 0)
-            const TARGET_YEAR = 2026; 
-            const surveyYear = allSurveysData.find(s => s.id === this.id)?.tahun_kegiatan;
-            const useEffectiveMonth = (parseInt(surveyYear, 10) === TARGET_YEAR);
-            if (!useEffectiveMonth) {
-                 return { status: 'Belum Berjalan', badge: 'status-belum', priority: 3 };
-            }
-
-            const hasValidMonths = !isNaN(bulanMulai) && !isNaN(bulanSelesai) && bulanMulai > 0 && bulanSelesai <= 12 && bulanMulai <= bulanSelesai;
-            if (hasValidMonths) {
-                // (currentMonth >= bulanMulai && currentMonth <= bulanSelesai) -> Seharusnya berjalan
-                // (currentMonth < bulanMulai) -> Belum waktunya
-                // (currentMonth > bulanSelesai) -> Sudah lewat jadwal
-                return { status: 'Belum Berjalan', badge: 'status-belum', priority: 3 };
-            } else {
-                return { status: 'Belum Berjalan', badge: 'status-belum', priority: 3 };
-            }
-        }
-        
-        function getStatusBadge(status) {
-            if (!status) return 'status-na';
-            switch (status) {
-                case 'selesai': return 'status-selesai';
-                case 'proses': return 'status-berjalan'; 
-                case 'belum': return 'status-belum';
-                case 'aktif': return 'bg-orange-100 text-orange-800 border border-orange-300';
-                case 'cuti': return 'bg-gray-200 text-gray-800 border border-gray-400';
-                default: return 'status-na';
-            }
-        }
-        
-        function showFloatingSummary(dataCount, timeElapsed) {
-            summaryTotalData.textContent = `${dataCount} baris`;
-            summaryTimeElapsed.textContent = `${timeElapsed.toFixed(2)} detik`;
-            summaryStatus.textContent = 'Selesai';
-            summaryStatus.classList.remove('text-red-600', 'text-yellow-600');
-            summaryStatus.classList.add('text-emerald-600');
-            floatingSummaryCard.classList.remove('hidden', 'opacity-0');
-            setTimeout(() => { floatingSummaryCard.classList.add('hidden'); }, 10000); 
-        }
-
-        function calculateProgress(realisasi, target) {
-            if (target === 0) return 0;
-            const progress = Math.round((realisasi / target) * 100);
-            return Math.min(progress, 100);
-        }
-
-        function downloadCSV(csvString, filename) {
-            try {
-                const BOM = "\uFEFF"; 
-                const blob = new Blob([BOM + csvString], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement("a");
-                if (link.download !== undefined) { 
-                    const url = URL.createObjectURL(blob);
-                    link.setAttribute("href", url);
-                    link.setAttribute("download", filename);
-                    link.style.visibility = 'hidden';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    console.log('File ' + filename + ' berhasil diekspor!'); 
-                }
-            } catch (error) {
-                console.error("Gagal membuat atau mengunduh Blob:", error);
-                console.error('Gagal mengekspor data. Periksa konsol untuk detail.', error);
-            }
-        }
-        
-        function updateExportButtonVisibility() {
-            // Tampilkan tombol export summary HANYA jika di view monitoring DAN sudah memilih kategori
-            if (currentMainView === 'monitoring' && currentViewCategory !== null) {
-                exportSummaryBtn.classList.remove('hidden');
-            } else {
-                exportSummaryBtn.classList.add('hidden');
-            }
-        }
-        
-        function csvToJSON(csv) {
-            const lines = csv.split('\n').filter(line => line.trim() !== '');
-            if (lines.length < 1) return [];
-            const result = [];
-            const rawHeaderLine = lines[0].trim();
-            const parseLine = (line) => {
-                const values = [];
-                let current = '';
-                let inQuotes = false;
-                for (let i = 0; i < line.length; i++) {
-                    const char = line[i];
-                    if (char === '"') inQuotes = !inQuotes;
-                    else if (char === ',' && !inQuotes) {
-                        values.push(current.trim());
-                        current = '';
-                    } else current += char;
-                }
-                values.push(current.trim()); 
-                return values.map(v => (v.length > 1 && v.startsWith('"') && v.endsWith('"')) ? v.substring(1, v.length - 1).trim() : v);
-            };
-            const headers = parseLine(rawHeaderLine).map(h => h.trim());
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (line === "") continue;
-                const obj = {};
-                const currentline = parseLine(line); 
-                for (let j = 0; j < headers.length; j++) {
-                    if (headers[j]) obj[headers[j]] = currentline[j] ? currentline[j] : '';
-                }
-                result.push(obj);
-            }
-            return result;
-        }
-
-        // --- FUNGSI AUTO REFRESH DAN STATUS (Tidak berubah) ---
-        function updateRefreshStatus(success) {
-            const now = new Date();
-            const dateTimeFormatOptions = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-            const formattedTime = now.toLocaleDateString('id-ID', dateTimeFormatOptions);
-            
-            if (success) {
-                lastUpdateTimestamp = now;
-                lastUpdateTimeElement.textContent = `Terakhir diperbarui: ${formattedTime}`;
-                lastUpdateTimeElement.classList.remove('text-red-600');
-                lastUpdateTimeElement.classList.add('text-gray-700');
-                refreshIcon.classList.add('text-orange-500');
-                refreshIcon.classList.remove('text-red-500');
-            } else {
-                lastUpdateTimeElement.textContent = `Terakhir diperbarui: GAGAL! (${formattedTime})`;
-                lastUpdateTimeElement.classList.remove('text-gray-700');
-                lastUpdateTimeElement.classList.add('text-red-600');
-                refreshIcon.classList.remove('text-orange-500');
-                refreshIcon.classList.add('text-red-500');
-            }
-            refreshIcon.classList.remove('animate-spin'); // STOP SPIN
-        }
-        
-        function startAutoRefresh() {
-            if (refreshTimer) clearInterval(refreshTimer);
-            updateRefreshStatus(lastUpdateTimestamp !== null); 
-            refreshTimer = setInterval(() => {
-                console.log("Auto-refresh: Memulai pengambilan data monitoring...");
-                fetchMonitoringData(false); // Hanya refresh data monitoring
-            }, REFRESH_INTERVAL_MS);
-        }
-
-        // --- FUNGSI EXPORT (Tidak berubah) ---
-        function exportSurveySummaryToCSV() {
-            const startTime = performance.now(); 
-            if (allSurveysData.length === 0) {
-                console.error("Tidak ada data survei untuk diekspor.");
-                floatingSummaryCard.classList.add('hidden'); 
-                return;
-            }
-            const filename = `Ringkasan_Survei_BPS_Belitung_${new Date().toISOString().slice(0, 10)}.csv`;
-            const headers = ["ID", "Nama Survei", "Kategori", "Jadwal Kegiatan", "Target", "Realisasi", "Sisa", "Persentase Progress", "Jumlah Petugas", "Status Keseluruhan"];
-            let csv = [headers.join(',')];
-            allSurveysData.forEach(survey => {
-                if (!MAIN_CATEGORIES.includes(survey.kategori)) return; 
-                const progress = calculateProgress(survey.realisasi, survey.target);
-                const sisa = survey.target - survey.realisasi;
-                const overallStatus = getSurveyOverallStatus.call(survey, survey.realisasi, survey.target).status;
-                const dataRow = [
-                    survey.id, `"${survey.nama.replace(/"/g, '""')}"`, survey.kategori,
-                    `"${survey.deskripsi.replace(/"/g, '""').replace(/\n/g, ' ')}"`, 
-                    survey.target, survey.realisasi, sisa, `${progress}%`,
-                    survey.petugas.length, overallStatus
-                ];
-                csv.push(dataRow.join(','));
-            });
-            downloadCSV(csv.join('\n'), filename);
-            const endTime = performance.now(); 
-            const totalRows = allSurveysData.filter(s => MAIN_CATEGORIES.includes(s.kategori)).length; 
-            const timeElapsed = (endTime - startTime) / 1000; 
-            showFloatingSummary(totalRows, timeElapsed);
-        }
-
-        function exportTableToCSV(tableElement, filename) {
-            try {
-                let csv = [];
-                const rows = tableElement.querySelectorAll('tr');
-                for (let i = 0; i < rows.length; i++) {
-                    const row = rows[i];
-                    const cols = row.querySelectorAll('th, td');
-                    const rowData = [];
-                    for (let j = 0; j < cols.length; j++) {
-                        const col = cols[j];
-                        let cellData = col.innerText.trim().replace(/\s\s+/g, ' '); 
-                        if (i > 0 && (j === 3 || j === 4)) { 
-                            const idElement = col.querySelector('.font-mono');
-                            const id = idElement ? idElement.innerText.trim() : '';
-                            if (id) cellData = `${id} / ${cellData.replace(id, '').trim()}`;
-                        }
-                        const statusBadge = col.querySelector('.status-badge');
-                        if (statusBadge) cellData = statusBadge.innerText.trim();
-                        if (cellData.includes(',') || cellData.includes('\n') || cellData.includes('"')) {
-                            cellData = '"' + cellData.replace(/"/g, '""') + '"';
-                        }
-                        rowData.push(cellData);
-                    }
-                    csv.push(rowData.join(','));
-                }
-                downloadCSV(csv.join('\n'), filename);
-            } catch (error) {
-                console.error("Kesalahan saat ekspor data sampel:", error);
-            }
-        }
-
-        // --- FUNGSI FETCH DATA (DIMODIFIKASI) ---
-        
-        // Fungsi ini HANYA mengambil data untuk Monitoring Survei
-        async function fetchMonitoringData(isInitialLoad = true) {
-            if (isInitialLoad) {
-                showGlobalLoading("Memuat data monitoring...");
-            }
-            refreshIcon.classList.add('animate-spin');
-            
-            try {
-                const [surveyRes, assignmentsRes, sampelRes, staffMasterRes] = await Promise.all([
-                    fetch(SURVEYS_CSV_URL), fetch(ASSIGNMENTS_CSV_URL), 
-                    fetch(SAMPEL_CSV_URL), fetch(STAFF_MASTER_CSV_URL)
-                ]);
-
-                if (!surveyRes.ok || !assignmentsRes.ok || !sampelRes.ok || !staffMasterRes.ok) {
-                    throw new Error("Satu atau lebih file CSV monitoring gagal dimuat.");
-                }
-
-                const [surveyCSV, assignmentsCSV, sampelCSV, staffMasterCSV] = await Promise.all([
-                    surveyRes.text(), assignmentsRes.text(),
-                    sampelRes.text(), staffMasterRes.text()
-                ]);
-
-                const surveysJSON = csvToJSON(surveyCSV);
-                const assignmentsJSON = csvToJSON(assignmentsCSV); 
-                const sampelJSON = csvToJSON(sampelCSV);
-                const staffMasterJSON = csvToJSON(staffMasterCSV); 
-
-                allStaffMap = {};
-                staffMasterJSON.forEach(staff => {
-                    if (staff.id && staff.nama) {
-                        allStaffMap[staff.id] = { nama: staff.nama, peran: staff.peran, status: staff.status };
-                    }
-                });
-
-                allSurveysData = buildStructuredData(surveysJSON, assignmentsJSON, sampelJSON);
-                updateRefreshStatus(true); // Pembaruan status berhasil
-
-                if (isInitialLoad) {
-                    createSearchDOM(); // Buat DOM pencarian
-                    renderMainView(); // Render kategori
-                    showGlobalLoading(false); // Sembunyikan loading
-                    updateExportButtonVisibility(); 
-                } else {
-                    renderMainView(); // Re-render saat auto-refresh
-                }
-
-            } catch (error) {
-                console.error("Gagal mengambil data monitoring:", error);
-                updateRefreshStatus(false); 
-                if (isInitialLoad) {
-                    showGlobalError("Gagal memuat data monitoring!", `${error.message}. Pastikan URL CSV Anda benar dan sudah dipublikasikan.`);
-                }
-            }
-        }
-        
-        // --- BARU: Fungsi untuk mengambil data Snapshot ---
-        async function fetchSnapshotData() {
-            showGlobalLoading("Memuat data snapshot triwulanan...");
-            isSnapshotDataFetched = false;
-
-            try {
-                const res = await fetch(SNAPSHOT_CSV_URL);
-                if (!res.ok) {
-                    throw new Error(`Gagal memuat data (status: ${res.status}). GID '123456789' mungkin salah.`);
-                }
-                const csv = await res.text();
-                allSnapshotData = csvToJSON(csv);
-                
-                if (allSnapshotData.length === 0) {
-                     throw new Error("Data snapshot kosong. Pastikan sheet 'Snapshot' (GID=123456789) terisi.");
-                }
-
-                isSnapshotDataFetched = true;
-                showGlobalLoading(false);
-                renderSnapshotView(); // Render setelah data berhasil diambil
-
-            } catch (error) {
-                console.error("Gagal mengambil data snapshot:", error);
-                showGlobalError("Gagal memuat data snapshot!", `${error.message}. Pastikan GID untuk SNAPSHOT_CSV_URL sudah benar dan sheet sudah dipublikasikan.`);
-            }
-        }
-
-        // --- FUNGSI STRUKTUR DATA (Monitoring - Tidak berubah) ---
-        function buildStructuredData(surveys, assignments, sampel) {
-            const processedSampel = sampel.map(s => ({ ...s, statusLower: s.status ? s.status.trim().toLowerCase() : '' }));
-            let totalTargetTahunan = 0, totalRealisasiTahunan = 0;
-            const TARGET_YEAR = 2026;
-            const currentMonth = new Date().getMonth() + 1;
-
-            const structuredData = surveys.map(survey => {
-                const kategori = survey.kategori || 'Lain-lain';
-                const targetSurvey = parseInt(survey.target, 10) || 0;
-                const surveySampel = processedSampel.filter(s => s.survey_id === survey.id);
-                const realisasiSurvey = surveySampel.filter(s => s.statusLower === 'selesai').length;
-                
-                if (targetSurvey > 0) {
-                    totalTargetTahunan += targetSurvey;
-                    totalRealisasiTahunan += realisasiSurvey;
-                }
-
-                const surveyPetugas = assignments.filter(a => a.survey_id === survey.id)
-                    .map(a => {
-                        const targetPetugas = parseInt(a.target, 10) || 0;
-                        const realisasiPetugas = surveySampel.filter(s => s.petugas_id === a.id && s.statusLower === 'selesai').length;
-                        const staffInfo = allStaffMap[a.id] || { nama: 'N/A', peran: 'N/A', status: 'N/A' };
-                        return { ...a, nama: staffInfo.nama, peran: staffInfo.peran, status: staffInfo.status, target: targetPetugas, realisasi: realisasiPetugas };
-                    });
-                
-                const bulanMulai = parseInt(survey.bulan_mulai, 10);
-                const bulanSelesai = parseInt(survey.bulan_selesai, 10);
-                const surveyYear = parseInt(survey.tahun_kegiatan, 10);
-                const useEffectiveMonth = (surveyYear === TARGET_YEAR);
-                const effectiveCurrentMonth = useEffectiveMonth ? currentMonth : 0;
-                const overallStatus = getSurveyOverallStatus.call(survey, realisasiSurvey, targetSurvey, bulanMulai, bulanSelesai, effectiveCurrentMonth);
-
-                return { ...survey, kategori: kategori, target: targetSurvey, realisasi: realisasiSurvey, petugas: surveyPetugas, sampel: surveySampel, status: overallStatus.status, status_priority: overallStatus.priority, status_badge: overallStatus.badge };
-            });
-            
-            annualSummary = { totalTarget: totalTargetTahunan, totalRealisasi: totalRealisasiTahunan };
-            return structuredData;
-        }
-        
-        function getCategoryColors(kategori) {
-            switch (kategori) {
-                case 'Statistik Pertanian': return { primary: 'green-600', accent: 'green-500', lightBg: 'green-100', darkText: 'green-700', checkIcon: 'green-500' };
-                case 'Statistik PEK': return { primary: 'blue-600', accent: 'blue-500', lightBg: 'blue-100', darkText: 'blue-700', checkIcon: 'blue-500' };
-                case 'Statistik Industri': return { primary: 'orange-600', accent: 'orange-500', lightBg: 'orange-100', darkText: 'orange-700', checkIcon: 'green-500' };
-                default: return { primary: 'gray-600', accent: 'gray-500', lightBg: 'gray-100', darkText: 'gray-700', checkIcon: 'gray-500' };
-            }
-        }
-
-        // --- FUNGSI VIEW SWITCHING (BARU) ---
-        function switchMainView(viewName) {
-            currentMainView = viewName;
-            
-            if (viewName === 'monitoring') {
-                // Tampilkan view monitoring
-                monitoringView.classList.remove('hidden');
-                snapshotView.classList.add('hidden');
-                
-                // Atur tombol nav
-                monitoringViewBtn.classList.add('active');
-                snapshotViewBtn.classList.remove('active');
-                
-                // Render ulang view monitoring (kategori atau daftar survei)
-                renderMainView();
-                
-            } else if (viewName === 'snapshot') {
-                // Tampilkan view snapshot
-                monitoringView.classList.add('hidden');
-                snapshotView.classList.remove('hidden');
-                
-                // Atur tombol nav
-                monitoringViewBtn.classList.remove('active');
-                snapshotViewBtn.classList.add('active');
-                
-                // Jika data snapshot belum diambil, ambil datanya
-                if (!isSnapshotDataFetched) {
-                    fetchSnapshotData();
-                } else {
-                    // Jika data sudah ada, langsung render
-                    renderSnapshotView();
-                }
-            }
-            
-            // Perbarui visibilitas tombol export
-            updateExportButtonVisibility();
-        }
-        
-        // --- FUNGSI LOADING & ERROR (BARU) ---
-        function showGlobalLoading(messageOrFalse) {
-            if (messageOrFalse === false) {
-                loadingIndicator.style.display = 'none';
-                errorMessage.style.display = 'none';
-            } else {
-                loadingText.textContent = messageOrFalse;
-                loadingIndicator.style.display = 'block';
-                errorMessage.style.display = 'none';
-                // Sembunyikan kedua kontainer view
-                monitoringView.classList.add('hidden');
-                snapshotView.classList.add('hidden');
-            }
-        }
-
-        function showGlobalError(title, details) {
-            errorTitle.textContent = title;
-            errorDetails.textContent = details;
-            loadingIndicator.style.display = 'none';
-            errorMessage.style.display = 'block';
-            // Sembunyikan kedua kontainer view
-            monitoringView.classList.add('hidden');
-            snapshotView.classList.add('hidden');
-        }
-
-        // --- FUNGSI RENDER (MONITORING) ---
-        
-        function createSearchDOM() {
-            // Hanya buat jika belum ada
-            if (searchContainer) return;
-
-            searchInput = document.createElement('input');
-            searchInput.id = 'survey-search-input';
-            searchInput.type = 'text';
-            searchInput.placeholder = 'Cari nama survei atau deskripsi...';
-            searchInput.className = 'w-full p-3 pl-10 mb-6 border border-gray-300 rounded-xl shadow-inner focus:ring-orange-500 focus:border-orange-500 transition duration-150';
-
-            searchContainer = document.createElement('div');
-            searchContainer.className = 'relative hidden'; // Sembunyikan default
-            searchContainer.innerHTML = `
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </div>
-            `;
-            searchContainer.appendChild(searchInput);
-            
-            // Masukkan searchContainer ke dalam DOM (di dalam #monitoring-view)
-            monitoringView.insertBefore(searchContainer, surveyListContainer);
-            
-            // Tambahkan event listener untuk filter
-            searchInput.addEventListener('input', filterSurveys);
-        }
-        
-        // setView (monitoring)
-        function setMonitoringView(categoryName) {
-            currentViewCategory = categoryName;
-            
-            if (categoryName !== null) {
-                searchContainer.classList.remove('hidden');
-                searchInput.value = ''; // Kosongkan input
-                filterSurveys(); // Panggil filter tanpa kata kunci
-            } else {
-                searchContainer.classList.add('hidden');
-            }
-            
-            renderMainView();
-            updateExportButtonVisibility(); 
-        }
-
-        // renderMainView (monitoring)
-        function renderMainView() {
-            // Fungsi ini hanya dipanggil jika currentMainView === 'monitoring'
-            if (currentMainView !== 'monitoring') return;
-            
-            // Tampilkan kembali #monitoring-view jika tersembunyi
-            monitoringView.classList.remove('hidden');
-            
-            if (currentViewCategory === null) {
-                renderCategoryCards();
-            } else {
-                renderCategorySurveys(currentViewCategory);
-            }
-        }
-
-        // renderCategoryCards (monitoring)
-        function renderCategoryCards() {
-            surveyListContainer.innerHTML = '';
-            
-            const totalTarget = annualSummary.totalTarget, totalRealisasi = annualSummary.totalRealisasi;
-            const progressTahunan = calculateProgress(totalRealisasi, totalTarget);
-            const progressColor = progressTahunan >= 90 ? 'bg-emerald-500' : progressTahunan >= 50 ? 'bg-yellow-500' : 'bg-red-500';
-
-            const annualSummaryHtml = `
-                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border-t-4 border-orange-500 mb-10">
-                    <h2 class="text-2xl font-extrabold text-gray-800 mb-6 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-orange-600 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7-5.2 4.1-1.3-1.3"/>
-                        </svg>
-                        Realisasi Tahunan
-                    </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
-                        <div class="md:col-span-2">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-lg font-bold text-gray-700">Progress Keseluruhan</span>
-                                <span class="text-2xl font-extrabold text-orange-600">${progressTahunan}%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-4 shadow-inner">
-                                <div class="${progressColor} h-4 rounded-full transition-all duration-700 ease-out" style="width: ${progressTahunan}%"></div>
-                            </div>
-                        </div>
-                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                            <dt class="text-sm font-medium text-gray-500 truncate">🎯 Target Total</dt>
-                            <dd class="mt-1 text-2xl font-extrabold text-gray-900">${totalTarget.toLocaleString('id-ID')}</dd>
-                        </div>
-                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                            <dt class="text-sm font-medium text-gray-500 truncate">✅ Realisasi Total</dt>
-                            <dd class="mt-1 text-2xl font-extrabold text-green-600">${totalRealisasi.toLocaleString('id-ID')}</dd>
-                        </div>
-                    </div>
-                </div>
-            `;
-            surveyListContainer.innerHTML += annualSummaryHtml;
-
-            const cardsContainer = document.createElement('div');
-            cardsContainer.className = 'grid grid-cols-1 md:grid-cols-2 gap-10'; 
-
-            MAIN_CATEGORIES.forEach((kategori, index) => { 
-                const surveysInCat = allSurveysData.filter(s => s.kategori === kategori);
-                const totalTarget = surveysInCat.reduce((sum, s) => sum + s.target, 0);
-                const totalRealisasi = surveysInCat.reduce((sum, s) => sum + s.realisasi, 0);
-                const progress = calculateProgress(totalRealisasi, totalTarget);
-                const colors = getCategoryColors(kategori);
-                const cardWrapper = document.createElement('div');
-                const isLastOddItem = index === MAIN_CATEGORIES.length - 1 && MAIN_CATEGORIES.length % 2 !== 0;
-                cardWrapper.className = isLastOddItem ? 'md:col-span-2 flex justify-center' : 'col-span-1'; 
-                const card = document.createElement('div');
-                let cardClasses = `card-interactive shadow-2xl bg-white rounded-xl border-t-8 border-${colors.accent} p-8 cursor-pointer w-full`;
-                if (isLastOddItem) cardClasses += ' md:max-w-lg'; 
-                card.className = cardClasses;
-                card.setAttribute('data-category', kategori);
-                card.addEventListener('click', () => setMonitoringView(kategori)); // Modifikasi di sini
-                card.innerHTML = `
-                    <div class="flex items-start justify-between mb-8">
-                        <h3 class="text-3xl font-extrabold text-${colors.darkText} truncate pr-4">${kategori}</h3>
-                        <div class="text-right"> 
-                            <p class="text-sm font-medium text-gray-500">Jumlah Kegiatan</p>
-                            <span class="text-4xl font-extrabold text-gray-900">${surveysInCat.length}</span>
-                        </div>
-                    </div>
-                    <div class="mb-5">
-                        <div class="flex justify-between mb-1">
-                            <span class="text-base font-semibold text-gray-600">Progress Total:</span>
-                            <span class="text-base font-semibold text-gray-700">${progress}%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-3">
-                            <div class="bg-${colors.primary} h-3 rounded-full" style="width: ${progress}%"></div>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4 text-base pt-4 border-t border-gray-100">
-                        <p class="text-gray-500 font-medium">Target: <span class="text-gray-900 font-semibold">${totalTarget.toLocaleString('id-ID')}</span> unit</p>
-                        <p class="text-gray-500 font-medium">Realisasi: <span class="text-green-600 font-semibold">${totalRealisasi.toLocaleString('id-ID')}</span> unit</p>
-                    </div>
-                `;
-                cardWrapper.appendChild(card); 
-                cardsContainer.appendChild(cardWrapper);
-            });
-            surveyListContainer.appendChild(cardsContainer);
-        }
-
-        let currentSurveysToRender = []; 
-
-        // renderCategorySurveys (monitoring)
-        function renderCategorySurveys(category) {
-            surveyListContainer.innerHTML = '';
-            const headerContainer = document.createElement('div');
-            headerContainer.className = 'flex items-center space-x-4 mb-4';
-            const backButton = document.createElement('button');
-            backButton.className = 'text-gray-600 hover:text-orange-600 transition p-2 rounded-full hover:bg-gray-100';
-            backButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12" /></svg>`;
-            backButton.title = 'Kembali ke Dasbor Kategori';
-            backButton.addEventListener('click', () => setMonitoringView(null)); // Modifikasi di sini
-            headerContainer.appendChild(backButton);
-            const categoryTitle = document.createElement('h2');
-            categoryTitle.className = 'text-3xl font-extrabold text-gray-800';
-            categoryTitle.textContent = `Kegiatan Survei: ${category}`;
-            headerContainer.appendChild(categoryTitle);
-            surveyListContainer.appendChild(headerContainer);
-            
-            let surveys = allSurveysData.filter(s => s.kategori === category);
-            
-            // MODIFIKASI PENGURUTAN: Status Priority -> Bulan Mulai -> Nama
-            surveys.sort((a, b) => {
-                // 1. Prioritas Status (Berjalan < Selesai < Belum < N/A)
-                if (a.status_priority !== b.status_priority) {
-                    return a.status_priority - b.status_priority;
-                }
-                
-                // 2. Jadwal Kegiatan (Bulan Mulai) - Ascending (Januari dulu)
-                // Parse bulan, jika kosong/invalid dianggap 99 (paling akhir)
-                const monthA = parseInt(a.bulan_mulai, 10) || 99;
-                const monthB = parseInt(b.bulan_mulai, 10) || 99;
-                
-                if (monthA !== monthB) {
-                    return monthA - monthB;
-                }
-                
-                // 3. Nama (Alphabetical)
-                return a.nama.localeCompare(b.nama);
-            });
-            
-            currentSurveysToRender = surveys; 
-
-            const cardsContainer = document.createElement('div');
-            cardsContainer.id = 'survey-cards-container';
-            cardsContainer.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8';
-            surveyListContainer.appendChild(cardsContainer);
-            displaySurveys(currentSurveysToRender, category);
-            if (currentSurveysToRender.length === 0) {
-                cardsContainer.innerHTML = '<p class="text-gray-500 text-center mt-12 md:col-span-3">Tidak ada kegiatan survei dalam kategori ini.</p>';
-            }
-        }
-        
-        // displaySurveys (monitoring)
-        function displaySurveys(surveys, category) {
-            const cardsContainer = document.getElementById('survey-cards-container');
-            if (!cardsContainer) return;
-            cardsContainer.innerHTML = '';
-            if (surveys.length === 0) {
-                 cardsContainer.innerHTML = '<p class="text-gray-500 text-center mt-12 md:col-span-3">Tidak ada kegiatan yang cocok dengan kata kunci pencarian.</p>';
-                 return;
-            }
-            surveys.forEach(survey => {
-                const progress = calculateProgress(survey.realisasi, survey.target);
-                const colors = getCategoryColors(category);
-                const surveyCard = document.createElement('div');
-                surveyCard.className = 'card-interactive shadow-xl bg-white rounded-xl overflow-hidden cursor-pointer';
-                surveyCard.setAttribute('data-survey-id', survey.id);
-                surveyCard.addEventListener('click', (e) => showSurveyDetails(e.currentTarget.getAttribute('data-survey-id')));
-                surveyCard.innerHTML = `
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold text-${colors.darkText} mb-0 pr-2">${survey.nama}</h3>
-                            <span class="status-badge ${survey.status_badge}">${survey.status}</span>
-                        </div>
-                        <p class="text-xs font-semibold text-gray-500 mb-1">Jadwal Kegiatan:</p>
-                        <p class="text-base font-medium text-gray-700 mb-4">${survey.deskripsi}</p> 
-                        <div class="mb-4">
-                            <div class="flex justify-between mb-1">
-                                <span class="text-sm font-semibold text-${colors.darkText}">Progress</span>
-                                <span class="text-sm font-semibold text-gray-700">${progress}%</span>
-                            </div>
-                            <div class="w-full bg-${colors.lightBg} rounded-full h-2.5">
-                                <div class="bg-${colors.primary} h-2.5 rounded-full" style="width: ${progress}%"></div>
-                            </div>
-                        </div>
-                        <div class="flex justify-between text-sm text-gray-600 pt-4 border-t border-gray-200 mt-4">
-                            <span class="flex items-center space-x-1 font-medium">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-${colors.checkIcon}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                <span>${survey.realisasi} / ${survey.target}</span>
-                            </span>
-                            <span class="flex items-center space-x-1 font-medium">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-${colors.accent}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14c-1.396 0-2.492.35-3.218.895A6.002 6.002 0 0012 21a6.002 6.002 0 003.218-6.105c-.726-.545-1.822-.895-3.218-.895z" /></svg>
-                                <span>${survey.petugas.length} Petugas</span>
-                            </span>
-                        </div>
-                    </div>
-                `;
-                cardsContainer.appendChild(surveyCard);
-            });
-        }
-        
-        // filterSurveys (monitoring)
-        function filterSurveys() {
-            if (currentViewCategory === null) return;
-            const searchTerm = searchInput.value.toLowerCase().trim();
-            const filteredSurveys = currentSurveysToRender.filter(survey => 
-                survey.nama.toLowerCase().includes(searchTerm) || 
-                survey.deskripsi.toLowerCase().includes(searchTerm)
-            );
-            displaySurveys(filteredSurveys, currentViewCategory);
-        }
-        
-        // --- FUNGSI MODAL (Monitoring - Tidak berubah) ---
-        function showSurveyDetails(surveyId) {
-            const survey = allSurveysData.find(s => s.id === surveyId);
-            if (!survey) return;
-            exportSampelBtn.setAttribute('data-current-survey-id', survey.id);
-            const colors = getCategoryColors(survey.kategori);
-            modalTitle.textContent = survey.nama;
-            modalDeskripsi.textContent = survey.deskripsi;
-            const progressKeseluruhan = calculateProgress(survey.realisasi, survey.target);
-            modalProgressText.textContent = `${survey.realisasi} / ${survey.target}`;
-            
-            modalProgressIcon.classList.forEach(cls => { if (cls.startsWith('text-')) modalProgressIcon.classList.remove(cls); });
-            modalProgressIcon.classList.add(`text-${colors.primary}`);
-            modalProgressTextLabel.classList.forEach(cls => { if (cls.startsWith('text-')) modalProgressTextLabel.classList.remove(cls); });
-            modalProgressTextLabel.classList.add(`text-${colors.darkText}`);
-            modalProgressWrapper.classList.forEach(cls => { if (cls.startsWith('bg-')) modalProgressWrapper.classList.remove(cls); });
-            modalProgressWrapper.classList.add(`bg-${colors.lightBg}`);
-            modalProgressBar.classList.forEach(cls => { if (cls.startsWith('bg-')) modalProgressBar.classList.remove(cls); });
-            modalProgressBar.classList.add(`bg-${colors.primary}`);
-            modalProgressBar.style.width = `${progressKeseluruhan}%`;
-
-            modalTarget.textContent = survey.target.toLocaleString('id-ID');
-            modalRealisasi.textContent = survey.realisasi.toLocaleString('id-ID');
-            modalSisa.textContent = (survey.target - survey.realisasi).toLocaleString('id-ID');
-            
-            modalPetugasList.innerHTML = '';
-            if (survey.petugas.length > 0) {
-                survey.petugas.forEach(p => {
-                    const progressPetugas = calculateProgress(p.realisasi, p.target);
-                    const petugasStatusBadgeClass = p.status ? getStatusBadge(p.status.toLowerCase()) : 'status-na';
-                    modalPetugasList.innerHTML += `
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><span class="font-bold block">${p.nama}</span><span class="font-mono text-xs text-gray-500">${p.id}</span></td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${p.peran}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="status-badge ${petugasStatusBadgeClass}">${p.status}</span></td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <div class="flex items-center">
-                                    <div class="w-24 bg-${getCategoryColors(survey.kategori).lightBg} rounded-full h-2.5"><div class="bg-${getCategoryColors(survey.kategori).primary} h-2.5 rounded-full" style="width: ${progressPetugas}%"></div></div>
-                                    <span class="ml-3 font-medium">${p.realisasi} / ${p.target}</span>
-                                </div>
-                            </td>
-                        </tr>`;
-                });
-            } else {
-                 modalPetugasList.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">Tidak ada data petugas.</td></tr>`;
-            }
-            
-            modalSampelList.innerHTML = '';
-             if (survey.sampel.length > 0) {
-                survey.sampel.forEach(s => {
-                    const petugasId = s.petugas_id, namaPetugas = (allStaffMap[petugasId] || {}).nama;
-                    const displayNamaPetugas = namaPetugas || '<i class="text-gray-400">Belum Ditugaskan</i>';
-                    const displayIdPetugas = petugasId || '';
-                    const petugasDisplay = namaPetugas ? `<span class="font-mono text-xs text-gray-500 block">${displayIdPetugas}</span>${displayNamaPetugas}` : displayNamaPetugas;
-                    const pengawasId = s.pengawas_id, namaPengawas = (allStaffMap[pengawasId] || {}).nama;
-                    const displayNamaPengawas = namaPengawas || '<i class="text-gray-400">Belum Ditugaskan</i>';
-                    const displayIdPengawas = pengawasId || '';
-                    const pengawasDisplay = namaPengawas ? `<span class="font-mono text-xs text-gray-500 block">${displayIdPengawas}</span>${displayNamaPengawas}` : displayNamaPengawas;
-                    
-                    modalSampelList.innerHTML += `
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">${s.id}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${s.deskripsi}</td>
-                            <td class="px-6 py-4 text-sm text-gray-700 max-w-xs truncate">${s.alamat || '-'}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="status-badge ${getStatusBadge(s.statusLower)}">${s.status}</span></td>
-                            <td class="px-6 py-4 text-sm text-gray-700">${petugasDisplay}</td>
-                            <td class="px-6 py-4 text-sm text-gray-700">${pengawasDisplay}</td>
-                        </tr>`;
-                });
-            } else {
-                modalSampelList.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Tidak ada data sampel.</td></tr>`;
-            }
-            switchTab('ringkasan');
-            modal.classList.remove('hidden');
-        }
-        function closeModal() { modal.classList.add('hidden'); }
-        function switchTab(targetTab) {
-            tabContents.forEach(content => content.classList.add('hidden'));
-            tabButtons.forEach(button => {
-                button.classList.remove('active', 'text-orange-700');
-                button.classList.add('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
-            });
-            exportSampelBtn.classList.toggle('hidden', targetTab !== 'sampel');
-            document.getElementById(`tab-${targetTab}`).classList.remove('hidden');
-            const activeButton = document.querySelector(`.tab-button[data-tab="${targetTab}"]`);
-            activeButton.classList.add('active', 'text-orange-700');
-            activeButton.classList.remove('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
-        }
-        
-        // --- FUNGSI RENDER (SNAPSHOT - BARU) ---
+        // --- FUNGSI RENDER (SNAPSHOT - DIPERBARUI LEBIH MENARIK) ---
         
         function calculatePercentageChange(current, previous) {
             if (previous === 0) {
-                return (current > 0) ? 100.0 : 0.0; // Jika sebelumnya 0 dan sekarang positif, anggap 100%
+                return (current > 0) ? 100.0 : 0.0;
             }
             return ((current - previous) / previous) * 100;
         }
@@ -1303,17 +117,11 @@
         function renderSnapshotView() {
             if (currentMainView !== 'snapshot') return;
             
-            snapshotCardsContainer.innerHTML = ''; // Kosongkan kontainer
+            snapshotCardsContainer.innerHTML = ''; 
             currentQuarterSelection = snapshotQuarterSelect.value;
             
-            // Tentukan kolom mana yang akan dibandingkan
             const [currentQuarterKey, previousQuarterKey] = currentQuarterSelection.split('_vs_');
-            
-            // KONFIGURASI BARU: Tentukan nama kolom untuk fenomena berdasarkan pilihan dropdown
-            // Pastikan di Google Sheet Anda menambahkan kolom header seperti: 
-            // 'fenomena_q1_2026_vs_q4_2025', 'fenomena_q2_2026_vs_q1_2026', dst.
             const phenomenonKey = 'fenomena_' + currentQuarterSelection;
-            
             const selectionText = snapshotQuarterSelect.options[snapshotQuarterSelect.selectedIndex].text;
 
             if (allSnapshotData.length === 0) {
@@ -1324,57 +132,96 @@
             allSnapshotData.forEach(activity => {
                 const currentValue = parseFloat(activity[currentQuarterKey]) || 0;
                 const previousValue = parseFloat(activity[previousQuarterKey]) || 0;
-                
-                // Ambil data fenomena dari CSV, default ke strip jika kosong
-                const phenomenonText = activity[phenomenonKey] ? activity[phenomenonKey] : "-";
-                
+                const phenomenonText = activity[phenomenonKey] ? activity[phenomenonKey] : "Belum ada catatan fenomena.";
                 const percentageChange = calculatePercentageChange(currentValue, previousValue);
                 
-                let changeClass = 'neutral';
-                let changeIcon = '−'; // Minus sign / Strip
+                // Tentukan Tema Warna & Teks
+                let theme = {
+                    color: 'text-zinc-500',
+                    bgIcon: 'bg-zinc-100',
+                    border: 'border-zinc-200',
+                    accent: 'bg-zinc-400',
+                    lightBg: 'bg-zinc-50',
+                    statusText: 'STAGNAN',
+                    icon: '−' // Minus/Dash
+                };
                 
                 if (percentageChange > 0) {
-                    changeClass = 'positive';
-                    changeIcon = '▲'; // Arrow up
+                    theme = {
+                        color: 'text-emerald-600', // Hijau lebih tajam
+                        bgIcon: 'bg-emerald-50',
+                        border: 'border-emerald-200',
+                        accent: 'bg-emerald-500',
+                        lightBg: 'bg-emerald-50/50',
+                        statusText: 'TUMBUH',
+                        icon: '▲'
+                    };
                 } else if (percentageChange < 0) {
-                    changeClass = 'negative';
-                    changeIcon = '▼'; // Arrow down
+                    theme = {
+                        color: 'text-rose-600', // Merah mawar
+                        bgIcon: 'bg-rose-50',
+                        border: 'border-rose-200',
+                        accent: 'bg-rose-500',
+                        lightBg: 'bg-rose-50/50',
+                        statusText: 'KONTRAKSI',
+                        icon: '▼'
+                    };
                 }
 
                 const card = document.createElement('div');
-                // Layout flex column agar footer (persentase) selalu di bawah
-                card.className = 'snapshot-card bg-white p-6 rounded-xl shadow-lg border border-gray-200 flex flex-col h-full';
+                // Base classes
+                card.className = `snapshot-card bg-white rounded-xl shadow-sm hover:shadow-xl border border-gray-200 flex flex-col h-full`;
                 
-                // TAMPILAN DENGAN FENOMENA (Background bulat dihilangkan)
                 card.innerHTML = `
-                    <div class="flex-grow">
-                        <div class="flex items-start justify-between gap-4 mb-2">
-                            <h3 class="text-lg font-bold text-gray-800 leading-tight">${activity.nama_kegiatan}</h3>
-                            <!-- Background bulat (bg-gray-50, rounded-full, border, p-2) dihapus -->
-                            <div class="snapshot-card-icon flex-shrink-0 text-orange-600">
-                                <svg class="w-full h-full" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Garis Aksen Atas -->
+                    <div class="snapshot-accent-bar ${theme.accent}"></div>
+                    
+                    <div class="p-6 flex flex-col h-full">
+                        <!-- Header: Judul & Icon -->
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <div class="snapshot-status-label ${theme.lightBg} ${theme.color}">
+                                    ${theme.statusText}
+                                </div>
+                                <h3 class="text-lg font-bold text-gray-800 leading-tight mt-1">
+                                    ${activity.nama_kegiatan}
+                                </h3>
+                                <p class="text-xs text-gray-400 font-medium mt-1">${selectionText}</p>
+                            </div>
+                            <!-- Icon Tanpa Lingkaran, tapi berwarna sesuai tema -->
+                            <div class="snapshot-card-icon flex-shrink-0 ${theme.color} transition-colors duration-300">
+                                <svg class="w-full h-full drop-shadow-sm" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <use href="#icon-${activity.icon_id || 'mamin'}"/>
                                 </svg>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-500 font-medium mb-4 border-b border-gray-100 pb-2">${selectionText}</p>
-                        
-                        <!-- BAGIAN FENOMENA BARU -->
-                        <div class="mb-4 bg-slate-50 rounded-lg p-3 border border-slate-100">
-                            <p class="text-[10px] uppercase font-bold text-gray-400 mb-1 tracking-wider">Fenomena</p>
-                            <p class="text-sm text-gray-600 italic leading-relaxed">
-                                "${phenomenonText}"
-                            </p>
+
+                        <!-- Angka Besar -->
+                        <div class="mb-6">
+                            <div class="flex items-baseline space-x-2">
+                                <span class="text-4xl font-extrabold ${theme.color} tracking-tight">
+                                    ${Math.abs(percentageChange).toFixed(2)}%
+                                </span>
+                                <span class="text-xl font-bold ${theme.color} opacity-80">
+                                    ${theme.icon}
+                                </span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Perubahan dari triwulan sebelumnya</p>
                         </div>
-                    </div>
-                    
-                    <div class="mt-auto">
-                        <div class="snapshot-card-change ${changeClass} rounded-xl p-5 text-center transition-colors duration-300">
-                            <span class="block text-xs font-bold uppercase tracking-widest opacity-70 mb-1">Pertumbuhan</span>
-                            <div class="text-4xl font-extrabold flex items-center justify-center gap-2">
-                                <span class="text-3xl">${changeIcon}</span>
-                                <!-- Menggunakan Math.abs agar tidak ada double minus (▼ -5%) -->
-                                <span>${Math.abs(percentageChange).toFixed(2)}%</span>
+
+                        <!-- Fenomena Box (Bagian Bawah) -->
+                        <div class="mt-auto relative">
+                            <!-- Elemen dekoratif kutipan -->
+                            <div class="absolute -top-3 -left-1 text-4xl text-gray-200 font-serif opacity-50">“</div>
+                            
+                            <div class="bg-slate-50 rounded-lg p-4 border-l-4 ${theme.border} border-gray-100">
+                                <p class="text-[10px] uppercase font-bold text-gray-400 mb-1 tracking-wider flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    Fenomena
+                                </p>
+                                <p class="text-sm text-gray-600 italic leading-relaxed font-medium">
+                                    ${phenomenonText}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -1383,38 +230,7 @@
             });
         }
 
-
-        // --- EVENT LISTENERS (GLOBAL & INISIALISASI) ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Selalu muat data monitoring terlebih dahulu saat membuka
-            fetchMonitoringData(true); 
-            startAutoRefresh(); // Mulai timer auto-refresh untuk data monitoring
-            
-            // Listener untuk Navigasi Utama
-            monitoringViewBtn.addEventListener('click', () => switchMainView('monitoring'));
-            snapshotViewBtn.addEventListener('click', () => switchMainView('snapshot'));
-            
-            // Listener untuk Dropdown Snapshot
-            snapshotQuarterSelect.addEventListener('change', renderSnapshotView);
-
-            // Listener Modal (Monitoring)
-            closeModalBtn.addEventListener('click', closeModal);
-            modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-            modalTabs.addEventListener('click', (e) => {
-                if (e.target.classList.contains('tab-button')) switchTab(e.target.getAttribute('data-tab'));
-            });
-            
-            // Listener Tombol Export (Monitoring)
-            exportSummaryBtn.addEventListener('click', exportSurveySummaryToCSV);
-            exportSampelBtn.addEventListener('click', () => {
-                const surveyId = exportSampelBtn.getAttribute('data-current-survey-id');
-                if (sampelTable) exportTableToCSV(sampelTable, `Data_Sampel_${surveyId}_${new Date().toISOString().slice(0, 10)}.csv`);
-            });
-            
-            // Listener Kartu Floating
-            closeFloatingSummaryBtn.addEventListener('click', () => floatingSummaryCard.classList.add('hidden'));
-            downloadSummaryBtn.addEventListener('click', () => floatingSummaryCard.classList.add('hidden'));
-        });
+        // ... existing code (Event Listeners) ...
     </script>
 </body>
 </html>
