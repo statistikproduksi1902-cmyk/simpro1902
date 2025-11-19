@@ -9,14 +9,12 @@
     <!-- Memuat Font Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         /* Mengatur font default dan latar belakang yang lebih menarik */
         body {
             font-family: 'Inter', sans-serif;
-            /* background-color: #f7f9fc; Latar belakang yang lebih cerah dan halus */
-            
             /* Latar belakang gradient yang lebih modern */
             background-color: #f8fafc; /* slate-50 */
             background-image: linear-gradient(to bottom, #f8fafc, #f1f5f9); /* slate-50 to slate-100 */
@@ -26,20 +24,42 @@
             display: none;
         }
         
-        /* Style untuk tab utama (Navigasi View) */
-        .main-nav-button {
-            transition: all 0.3s ease;
-            border-bottom-width: 4px;
-            border-color: transparent;
+        /* --- GAYA NAVIGASI BARU (SEGMENTED CONTROL) --- */
+        .nav-segment-container {
+            background-color: #f1f5f9; /* slate-100 */
+            padding: 0.35rem;
+            border-radius: 9999px; /* rounded-full */
+            display: inline-flex;
+            position: relative;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0; /* slate-200 */
         }
-        .main-nav-button.active {
-            border-color: #EA580C; /* orange-600 */
-            color: #EA580C;
-            font-weight: 700;
+        
+        .nav-segment-btn {
+            padding: 0.6rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #64748b; /* slate-500 */
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            z-index: 1;
+            outline: none;
         }
-        .main-nav-button:not(.active):hover {
-            border-color: #fdba74; /* orange-300 */
-            color: #c2410c; /* orange-700 */
+
+        .nav-segment-btn:hover {
+            color: #ea580c; /* orange-600 */
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .nav-segment-btn.active {
+            background-color: white;
+            color: #ea580c; /* orange-600 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transform: scale(1.02);
         }
         
         /* Style untuk tab modal */
@@ -92,84 +112,67 @@
         }
         /* END Style Badge Status */
         
-        /* Style untuk Kartu Snapshot */
-        .snapshot-card {
-            transition: all 0.3s ease;
+        /* --- CUSTOM SCROLLBAR UNTUK TEXT AREA FENOMENA --- */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
         }
-        .snapshot-card-icon {
-            width: 40px; /* Diubah dari 48px menjadi 40px agar pas tanpa padding */
-            height: 40px;
-            min-width: 40px;
-            min-height: 40px;
-        }
-        .snapshot-card-value {
-            font-size: 2.5rem; /* 40px */
-            line-height: 1;
-            font-weight: 800; /* extrabold */
-        }
-        .snapshot-card-change.positive {
-            color: #16A34A; /* green-600 */
-            background-color: #DCFCE7; /* green-100 */
-        }
-        .snapshot-card-change.negative {
-            color: #DC2626; /* red-600 */
-            background-color: #FEE2E2; /* red-100 */
-        }
-        .snapshot-card-change.neutral {
-            color: #52525B; /* zinc-600 */
-            background-color: #F4F4F5; /* zinc-100 */
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen text-gray-800">
 
     <!-- Header -->
-    <header class="bg-white shadow-lg sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center space-x-4">
-            <div class="flex items-center space-x-4">
-                <!-- Logo Header (Grid) -->
-                <svg class="h-12 w-12 text-orange-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect width="7" height="9" x="3" y="3" rx="1"/>
-                    <rect width="7" height="5" x="14" y="3" rx="1"/>
-                    <rect width="7" height="9" x="14" y="12" rx="1"/>
-                    <rect width="7" height="5" x="3" y="16" rx="1"/>
-                </svg>
+    <header class="bg-white shadow-md sticky top-0 z-40 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                 
-                <h1 class="text-3xl font-extrabold tracking-tight text-gray-900">
-                    <span class="leading-snug">
-                        Sistem Monitoring Produksi <br> BPS Kabupaten Belitung
-                    </span>
-                </h1>
-            </div>
-            
-            <!-- Status Update Terakhir (dengan icon refresh) -->
-            <div id="refresh-status" class="text-right min-w-[150px]">
-                <p id="refresh-badge" class="inline-flex items-center justify-center text-sm font-medium bg-slate-100 border border-slate-200 rounded-full px-4 py-2 shadow-sm transition-all hover:shadow-md hover:bg-white">
-                    <!-- Icon Refresh (Diganti dengan Icon Jam/History yang lebih menarik) -->
-                    <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-orange-600">
-                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                        <path d="M3 3v5h5"/>
-                        <path d="M12 7v5l4 2"/>
-                    </svg>
-                    <!-- Text Update Terakhir -->
-                    <span id="last-update-time" class="text-gray-700">Terakhir diperbarui: -</span>
-                </p>
+                <!-- Logo & Judul -->
+                <div class="flex items-center space-x-4 w-full md:w-auto">
+                    <div class="bg-orange-50 p-2 rounded-xl border border-orange-100">
+                        <svg class="h-8 w-8 text-orange-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="7" height="9" x="3" y="3" rx="1"/>
+                            <rect width="7" height="5" x="14" y="3" rx="1"/>
+                            <rect width="7" height="9" x="14" y="12" rx="1"/>
+                            <rect width="7" height="5" x="3" y="16" rx="1"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-gray-900 leading-tight">
+                            Sistem Monitoring Produksi
+                        </h1>
+                        <p class="text-xs md:text-sm font-medium text-gray-500">BPS Kabupaten Belitung</p>
+                    </div>
+                </div>
+
+                <!-- Menu Navigasi Tengah (DESAIN BARU) -->
+                <div class="order-3 md:order-2 w-full md:w-auto flex justify-center">
+                    <div class="nav-segment-container">
+                        <button id="monitoring-view-btn" class="nav-segment-btn active">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                            Monitoring Survei
+                        </button>
+                        <button id="snapshot-view-btn" class="nav-segment-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                            Snapshot Triwulanan
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Status Update Terakhir -->
+                <div id="refresh-status" class="order-2 md:order-3 text-right min-w-[150px] hidden md:block">
+                    <p id="refresh-badge" class="inline-flex items-center justify-center text-xs font-medium bg-slate-50 border border-slate-200 rounded-full px-3 py-1.5 text-gray-500">
+                        <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1.5 text-orange-500">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                            <path d="M3 3v5h5"/>
+                        </svg>
+                        <span id="last-update-time">Updated: -</span>
+                    </p>
+                </div>
             </div>
         </div>
-        
-        <!-- Navigasi Utama (View Switcher) -->
-        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-gray-200">
-            <div class="flex space-x-10">
-                <button id="monitoring-view-btn" 
-                        class="main-nav-button active py-4 px-1 text-lg font-medium text-gray-600">
-                    Monitoring Survei
-                </button>
-                <button id="snapshot-view-btn" 
-                        class="main-nav-button py-4 px-1 text-lg font-medium text-gray-600">
-                    Snapshot Triwulanan
-                </button>
-            </div>
-        </nav>
     </header>
 
     <!-- Konten Utama -->
@@ -202,13 +205,16 @@
         <div id="snapshot-view" class="hidden">
             <!-- Header Snapshot (Judul & Dropdown) -->
             <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
-                <h2 class="text-3xl font-extrabold text-gray-800">
-                    Snapshot Perekonomian Triwulanan
-                </h2>
-                <div class="flex-shrink-0">
-                    <label for="snapshot-quarter-select" class="text-sm font-medium text-gray-700 mr-2">Pilih Periode:</label>
+                <div>
+                    <h2 class="text-3xl font-extrabold text-gray-800 tracking-tight">
+                        Snapshot Perekonomian
+                    </h2>
+                    <p class="text-gray-500 mt-1">Indikator pertumbuhan sektoral triwulanan</p>
+                </div>
+                
+                <div class="flex-shrink-0 bg-white p-1.5 rounded-xl shadow-sm border border-gray-200">
                     <select id="snapshot-quarter-select" 
-                            class="w-full md:w-auto p-3 border border-gray-300 rounded-xl shadow-sm focus:ring-orange-500 focus:border-orange-500 transition duration-150">
+                            class="w-full md:w-auto p-2.5 border-none rounded-lg bg-gray-50 font-semibold text-gray-700 focus:ring-2 focus:ring-orange-500 cursor-pointer text-sm">
                         <!-- Opsi (dibuat 'vs' agar lebih jelas) -->
                         <option value="q1_2026_vs_q4_2025">Q1-2026 vs Q4-2025</option>
                         <option value="q2_2026_vs_q1_2026">Q2-2026 vs Q1-2026</option>
@@ -219,7 +225,7 @@
             </div>
             
             <!-- Kontainer Kartu Snapshot -->
-            <div id="snapshot-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div id="snapshot-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 <!-- Kartu Snapshot akan dimuat oleh JavaScript -->
             </div>
         </div>
@@ -249,7 +255,7 @@
         <div class="flex items-center justify-center min-h-screen p-4">
             
             <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col transform transition-all">
-                <!-- Header Modal - bg diubah menjadi orange-50 -->
+                <!-- Header Modal -->
                 <div class="flex justify-between items-center p-6 border-b border-gray-200 bg-orange-50 rounded-t-xl">
                     <h2 id="modal-title" class="text-2xl font-bold text-gray-900">Judul Survei</h2>
                     <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 transition">
@@ -429,6 +435,19 @@
     <!-- SVG Icons Definitions (untuk Snapshot) -->
     <svg width="0" height="0" class="hidden">
       <defs>
+        <!-- Icon Pertanian (Daun/Tumbuhan) -->
+        <svg id="icon-category-pertanian" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1.7-1.3 2.9-4 3.8-6.2-2.3 1-4.8 2.5-7 3.6z"/></svg>
+        
+        <!-- Icon Industri (Pabrik) -->
+        <svg id="icon-category-industri" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22h20"/><path d="M8 6h4"/><path d="M8 10h4"/><path d="M8 14h4"/><path d="M17 22v-8"/><path d="M7 22V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v18"/></svg>
+        
+        <!-- Icon PEK (Gedung/Konstruksi) -->
+        <svg id="icon-category-pek" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M8 14h.01"/><path d="M16 14h.01"/></svg>
+        
+        <!-- Icon Lainnya (Fallback) -->
+        <svg id="icon-category-lainnya" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+
+        <!-- Existing Snapshot Icons... -->
         <svg id="icon-pangan" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h3l7-12 7 12h3L13 2Z"/><path d="M10.3 14 3 22h18L10.3 14Z"/><path d="M16 14h-3L10.3 14"/></svg>
         <svg id="icon-lainnya" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c0-3.3 2.7-6 6-6s6 2.7 6 6-2.7 6-6 6-6-2.7-6-6Z"/><path d="M12 12c0-3.3 2.7-6 6-6s6 2.7 6 6-2.7 6-6 6-6-2.7-6-6Z"/></svg>
         <svg id="icon-rph" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.8 19.4c-1.4.9-3.2.3-3.7-1.1L3 13.1c-.5-1.4.1-3.2 1.5-3.7L10 7.6c1.4-.5 3.2.1 3.7 1.5l3.1 5.2c.5 1.4-.1 3.2-1.5 3.7l-5.5 1.8Z"/><path d="M8.6 13.8a.5.5 0 0 0-.8-.4l-1.6.9a.5.5 0 0 0-.4.8l1.6.9c.3.2.7 0 .8-.4l.4-1.8Z"/><path d="m19 12 1.8-3.1c.5-1.4-.1-3.2-1.5-3.7L13.8 3c-1.4-.5-3.2.1-3.7 1.5L8.4 8"/></svg>
@@ -436,7 +455,7 @@
         <svg id="icon-tambang" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10Z"/><path d="M12 2v6h6"/><path d="M10 13a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/><path d="m14 17-2-2-2 2"/><path d="m10 17 2-2 2 2"/></svg>
         <svg id="icon-gali" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 22H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2Z"/><path d="M12 17a3 3 0 0 0 3-3V8a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/></svg>
         <svg id="icon-cpo" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-7-6.5-7-12.5a7 7 0 0 1 14 0c0 6-7 12.5-7 12.5Z"/><path d="M12 12a2.5 2.5 0 0 0 0-5 2.5 2.5 0 0 0 0 5Z"/></svg>
-        <svg id="icon-mamin" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M16 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M8 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M20 16.5v-3.4a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 1-.4-.5v-1.6a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 1-.4-.5V6.6a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 0-.8 0l-2.7.9a.6.6 0 0 0-.4.5v1.6a.6.6 0 0 1-.4.5l-2.7.9a.6.6 0 0 0-.4.5v3.4a.6.6 0 0 0 .4.5l2.7.9a.6.6 0 0 1 .4.5v1.6a.6.6 0 0 0 .4.5l2.7.9a.6.6 0 0 1 .8 0l2.7-.9a.6.6 0 0 0 .4-.5v-1.6a.6.6 0 0 1 .4-.5l2.7-.9a.6.6 0 0 0 .4-.5Z"/></svg>
+        <svg id="icon-mamin" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M16 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M8 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M20 16.5v-3.4a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 1-.4-.5v-1.6a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 1-.4-.5V6.6a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 0-.8 0l-2.7.9a.6.6 0 0 0-.4.5v1.6a.6.6 0 0 1-.4.5l-2.7.9a.6.6 0 0 0-.4.5v3.4a.6.6 0 0 0 .4.5l2.7.9a.6.6 0 0 1 .4.5v1.6a.6.6 0 0 0 .4.5l2.7.9a.6.6 0 0 1 .8 0l2.7-.9a.6.6 0 0 0 .4-.5v-1.6a.6.6 0 0 1 .4-.5l2.7-.9a.6.6 0 0 0 .4-.5Z"/></svg>
       </defs>
     </svg>
 
@@ -450,8 +469,6 @@
         const STAFF_MASTER_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV7Yuu82zCho9LP8-w2M7KdcHesZMG2ZkE0h7luPscpkbYYgqC1HVmE9f95zT17Wy3Z3ktg3g5h0ks/pub?gid=824879186&single=true&output=csv';
         
         // --- BARU: URL UNTUK DATA SNAPSHOT TRIWULANAN ---
-        // PENTING: GANTI '123456789' DENGAN GID SHEET DATA SNAPSHOT ANDA YANG SEBENARNYA
-        // Sheet ini harus memiliki kolom: id_kegiatan, nama_kegiatan, icon_id, unit, q4_2025, q1_2026, q2_2026, q3_2026, q4_2026
         const SNAPSHOT_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV7Yuu82zCho9LP8-w2M7KdcHesZMG2ZkE0h7luPscpkbYYgqC1HVmE9f95zT17Wy3Z3ktg3g5h0ks/pub?gid=396773127&single=true&output=csv';
         // --- END BARU ---
 
@@ -552,9 +569,6 @@
 
             const hasValidMonths = !isNaN(bulanMulai) && !isNaN(bulanSelesai) && bulanMulai > 0 && bulanSelesai <= 12 && bulanMulai <= bulanSelesai;
             if (hasValidMonths) {
-                // (currentMonth >= bulanMulai && currentMonth <= bulanSelesai) -> Seharusnya berjalan
-                // (currentMonth < bulanMulai) -> Belum waktunya
-                // (currentMonth > bulanSelesai) -> Sudah lewat jadwal
                 return { status: 'Belum Berjalan', badge: 'status-belum', priority: 3 };
             } else {
                 return { status: 'Belum Berjalan', badge: 'status-belum', priority: 3 };
@@ -606,12 +620,10 @@
                 }
             } catch (error) {
                 console.error("Gagal membuat atau mengunduh Blob:", error);
-                console.error('Gagal mengekspor data. Periksa konsol untuk detail.', error);
             }
         }
         
         function updateExportButtonVisibility() {
-            // Tampilkan tombol export summary HANYA jika di view monitoring DAN sudah memilih kategori
             if (currentMainView === 'monitoring' && currentViewCategory !== null) {
                 exportSummaryBtn.classList.remove('hidden');
             } else {
@@ -749,7 +761,6 @@
 
         // --- FUNGSI FETCH DATA (DIMODIFIKASI) ---
         
-        // Fungsi ini HANYA mengambil data untuk Monitoring Survei
         async function fetchMonitoringData(isInitialLoad = true) {
             if (isInitialLoad) {
                 showGlobalLoading("Memuat data monitoring...");
@@ -804,30 +815,41 @@
             }
         }
         
-        // --- BARU: Fungsi untuk mengambil data Snapshot ---
-        async function fetchSnapshotData() {
-            showGlobalLoading("Memuat data snapshot triwulanan...");
+        async function fetchSnapshotData(isBackgroundLoad = false) {
+            if (!isBackgroundLoad) {
+                showGlobalLoading("Memuat data snapshot triwulanan...");
+            } else {
+                console.log("Memulai pengambilan data snapshot di latar belakang...");
+            }
+            
             isSnapshotDataFetched = false;
 
             try {
                 const res = await fetch(SNAPSHOT_CSV_URL);
                 if (!res.ok) {
-                    throw new Error(`Gagal memuat data (status: ${res.status}). GID '123456789' mungkin salah.`);
+                    throw new Error(`Gagal memuat data (status: ${res.status}). GID mungkin salah.`);
                 }
                 const csv = await res.text();
                 allSnapshotData = csvToJSON(csv);
                 
                 if (allSnapshotData.length === 0) {
-                     throw new Error("Data snapshot kosong. Pastikan sheet 'Snapshot' (GID=123456789) terisi.");
+                     throw new Error("Data snapshot kosong. Pastikan sheet 'Snapshot' terisi.");
                 }
 
                 isSnapshotDataFetched = true;
-                showGlobalLoading(false);
-                renderSnapshotView(); // Render setelah data berhasil diambil
+                
+                if (!isBackgroundLoad) {
+                    showGlobalLoading(false);
+                    renderSnapshotView(); 
+                } else {
+                    console.log("Data snapshot berhasil dimuat di latar belakang.");
+                }
 
             } catch (error) {
                 console.error("Gagal mengambil data snapshot:", error);
-                showGlobalError("Gagal memuat data snapshot!", `${error.message}. Pastikan GID untuk SNAPSHOT_CSV_URL sudah benar dan sheet sudah dipublikasikan.`);
+                if (!isBackgroundLoad) {
+                    showGlobalError("Gagal memuat data snapshot!", `${error.message}. Pastikan GID untuk SNAPSHOT_CSV_URL sudah benar.`);
+                }
             }
         }
 
@@ -880,45 +902,42 @@
             }
         }
 
-        // --- FUNGSI VIEW SWITCHING (BARU) ---
+        function getCategoryIcon(kategori) {
+             switch (kategori) {
+                case 'Statistik Pertanian': return 'icon-category-pertanian';
+                case 'Statistik PEK': return 'icon-category-pek';
+                case 'Statistik Industri': return 'icon-category-industri';
+                default: return 'icon-category-lainnya';
+            }
+        }
+
+        // --- FUNGSI VIEW SWITCHING ---
         function switchMainView(viewName) {
             currentMainView = viewName;
             
             if (viewName === 'monitoring') {
-                // Tampilkan view monitoring
                 monitoringView.classList.remove('hidden');
                 snapshotView.classList.add('hidden');
-                
-                // Atur tombol nav
                 monitoringViewBtn.classList.add('active');
                 snapshotViewBtn.classList.remove('active');
-                
-                // Render ulang view monitoring (kategori atau daftar survei)
                 renderMainView();
                 
             } else if (viewName === 'snapshot') {
-                // Tampilkan view snapshot
                 monitoringView.classList.add('hidden');
                 snapshotView.classList.remove('hidden');
-                
-                // Atur tombol nav
                 monitoringViewBtn.classList.remove('active');
                 snapshotViewBtn.classList.add('active');
                 
-                // Jika data snapshot belum diambil, ambil datanya
                 if (!isSnapshotDataFetched) {
-                    fetchSnapshotData();
+                    fetchSnapshotData(false); 
                 } else {
-                    // Jika data sudah ada, langsung render
                     renderSnapshotView();
                 }
             }
-            
-            // Perbarui visibilitas tombol export
             updateExportButtonVisibility();
         }
         
-        // --- FUNGSI LOADING & ERROR (BARU) ---
+        // --- FUNGSI LOADING & ERROR ---
         function showGlobalLoading(messageOrFalse) {
             if (messageOrFalse === false) {
                 loadingIndicator.style.display = 'none';
@@ -927,7 +946,6 @@
                 loadingText.textContent = messageOrFalse;
                 loadingIndicator.style.display = 'block';
                 errorMessage.style.display = 'none';
-                // Sembunyikan kedua kontainer view
                 monitoringView.classList.add('hidden');
                 snapshotView.classList.add('hidden');
             }
@@ -938,25 +956,20 @@
             errorDetails.textContent = details;
             loadingIndicator.style.display = 'none';
             errorMessage.style.display = 'block';
-            // Sembunyikan kedua kontainer view
             monitoringView.classList.add('hidden');
             snapshotView.classList.add('hidden');
         }
 
         // --- FUNGSI RENDER (MONITORING) ---
-        
         function createSearchDOM() {
-            // Hanya buat jika belum ada
             if (searchContainer) return;
-
             searchInput = document.createElement('input');
             searchInput.id = 'survey-search-input';
             searchInput.type = 'text';
             searchInput.placeholder = 'Cari nama survei atau deskripsi...';
             searchInput.className = 'w-full p-3 pl-10 mb-6 border border-gray-300 rounded-xl shadow-inner focus:ring-orange-500 focus:border-orange-500 transition duration-150';
-
             searchContainer = document.createElement('div');
-            searchContainer.className = 'relative hidden'; // Sembunyikan default
+            searchContainer.className = 'relative hidden'; 
             searchContainer.innerHTML = `
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -965,38 +978,26 @@
                 </div>
             `;
             searchContainer.appendChild(searchInput);
-            
-            // Masukkan searchContainer ke dalam DOM (di dalam #monitoring-view)
             monitoringView.insertBefore(searchContainer, surveyListContainer);
-            
-            // Tambahkan event listener untuk filter
             searchInput.addEventListener('input', filterSurveys);
         }
         
-        // setView (monitoring)
         function setMonitoringView(categoryName) {
             currentViewCategory = categoryName;
-            
             if (categoryName !== null) {
                 searchContainer.classList.remove('hidden');
-                searchInput.value = ''; // Kosongkan input
-                filterSurveys(); // Panggil filter tanpa kata kunci
+                searchInput.value = ''; 
+                filterSurveys(); 
             } else {
                 searchContainer.classList.add('hidden');
             }
-            
             renderMainView();
             updateExportButtonVisibility(); 
         }
 
-        // renderMainView (monitoring)
         function renderMainView() {
-            // Fungsi ini hanya dipanggil jika currentMainView === 'monitoring'
             if (currentMainView !== 'monitoring') return;
-            
-            // Tampilkan kembali #monitoring-view jika tersembunyi
             monitoringView.classList.remove('hidden');
-            
             if (currentViewCategory === null) {
                 renderCategoryCards();
             } else {
@@ -1004,39 +1005,45 @@
             }
         }
 
-        // renderCategoryCards (monitoring)
         function renderCategoryCards() {
             surveyListContainer.innerHTML = '';
-            
             const totalTarget = annualSummary.totalTarget, totalRealisasi = annualSummary.totalRealisasi;
             const progressTahunan = calculateProgress(totalRealisasi, totalTarget);
             const progressColor = progressTahunan >= 90 ? 'bg-emerald-500' : progressTahunan >= 50 ? 'bg-yellow-500' : 'bg-red-500';
 
+            // Kartu Ringkasan Tahunan (Tetap)
             const annualSummaryHtml = `
-                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border-t-4 border-orange-500 mb-10">
-                    <h2 class="text-2xl font-extrabold text-gray-800 mb-6 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-orange-600 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7-5.2 4.1-1.3-1.3"/>
-                        </svg>
-                        Realisasi Tahunan
-                    </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
-                        <div class="md:col-span-2">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-lg font-bold text-gray-700">Progress Keseluruhan</span>
-                                <span class="text-2xl font-extrabold text-orange-600">${progressTahunan}%</span>
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-100 mb-10 relative overflow-hidden group hover:shadow-xl transition-all duration-300">
+                    <div class="absolute -top-16 -right-16 w-48 h-48 bg-orange-50 rounded-full opacity-60 z-0"></div>
+                    <div class="relative z-10">
+                        <h2 class="text-2xl font-extrabold text-gray-800 mb-6 flex items-center">
+                            <div class="p-2 bg-orange-100 text-orange-600 rounded-lg mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7-5.2 4.1-1.3-1.3"/>
+                                </svg>
                             </div>
-                            <div class="w-full bg-gray-200 rounded-full h-4 shadow-inner">
-                                <div class="${progressColor} h-4 rounded-full transition-all duration-700 ease-out" style="width: ${progressTahunan}%"></div>
+                            Realisasi Tahunan
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 items-center">
+                            <div class="md:col-span-2">
+                                <div class="flex justify-between items-end mb-2">
+                                    <span class="text-base font-bold text-gray-500 uppercase tracking-wider">Progress Total</span>
+                                    <span class="text-4xl font-black text-orange-600 tracking-tight">${progressTahunan}%</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-4 overflow-hidden">
+                                    <div class="${progressColor} h-4 rounded-full transition-all duration-1000 ease-out relative" style="width: ${progressTahunan}%">
+                                        <div class="absolute inset-0 bg-white opacity-20 w-full h-full animate-[shimmer_2s_infinite]"></div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                            <dt class="text-sm font-medium text-gray-500 truncate">🎯 Target Total</dt>
-                            <dd class="mt-1 text-2xl font-extrabold text-gray-900">${totalTarget.toLocaleString('id-ID')}</dd>
-                        </div>
-                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                            <dt class="text-sm font-medium text-gray-500 truncate">✅ Realisasi Total</dt>
-                            <dd class="mt-1 text-2xl font-extrabold text-green-600">${totalRealisasi.toLocaleString('id-ID')}</dd>
+                            <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                                <dt class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Target Total</dt>
+                                <dd class="text-2xl font-extrabold text-gray-800">${totalTarget.toLocaleString('id-ID')}</dd>
+                            </div>
+                            <div class="bg-green-50 rounded-xl p-4 border border-green-100">
+                                <dt class="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">Realisasi Total</dt>
+                                <dd class="text-2xl font-extrabold text-green-700">${totalRealisasi.toLocaleString('id-ID')}</dd>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1044,7 +1051,7 @@
             surveyListContainer.innerHTML += annualSummaryHtml;
 
             const cardsContainer = document.createElement('div');
-            cardsContainer.className = 'grid grid-cols-1 md:grid-cols-2 gap-10'; 
+            cardsContainer.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'; 
 
             MAIN_CATEGORIES.forEach((kategori, index) => { 
                 const surveysInCat = allSurveysData.filter(s => s.kategori === kategori);
@@ -1052,35 +1059,63 @@
                 const totalRealisasi = surveysInCat.reduce((sum, s) => sum + s.realisasi, 0);
                 const progress = calculateProgress(totalRealisasi, totalTarget);
                 const colors = getCategoryColors(kategori);
+                const iconId = getCategoryIcon(kategori);
+
                 const cardWrapper = document.createElement('div');
-                const isLastOddItem = index === MAIN_CATEGORIES.length - 1 && MAIN_CATEGORIES.length % 2 !== 0;
-                cardWrapper.className = isLastOddItem ? 'md:col-span-2 flex justify-center' : 'col-span-1'; 
+                // const isLastOddItem = index === MAIN_CATEGORIES.length - 1 && MAIN_CATEGORIES.length % 2 !== 0;
+                // cardWrapper.className = isLastOddItem ? 'md:col-span-2 lg:col-span-1 flex justify-center' : 'col-span-1'; 
+                cardWrapper.className = 'col-span-1';
+                
                 const card = document.createElement('div');
-                let cardClasses = `card-interactive shadow-2xl bg-white rounded-xl border-t-8 border-${colors.accent} p-8 cursor-pointer w-full`;
-                if (isLastOddItem) cardClasses += ' md:max-w-lg'; 
-                card.className = cardClasses;
+                // Desain Kartu Kategori Baru (Bento Grid Style)
+                card.className = 'group relative bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 cursor-pointer w-full h-full overflow-hidden';
                 card.setAttribute('data-category', kategori);
-                card.addEventListener('click', () => setMonitoringView(kategori)); // Modifikasi di sini
+                card.addEventListener('click', () => setMonitoringView(kategori)); 
+                
                 card.innerHTML = `
-                    <div class="flex items-start justify-between mb-8">
-                        <h3 class="text-3xl font-extrabold text-${colors.darkText} truncate pr-4">${kategori}</h3>
-                        <div class="text-right"> 
-                            <p class="text-sm font-medium text-gray-500">Jumlah Kegiatan</p>
-                            <span class="text-4xl font-extrabold text-gray-900">${surveysInCat.length}</span>
+                    <!-- Decorative Background Shape -->
+                    <div class="absolute -top-12 -right-12 w-40 h-40 bg-${colors.lightBg} rounded-full opacity-30 group-hover:scale-150 transition-transform duration-700 ease-in-out z-0"></div>
+                    
+                    <div class="relative z-10 flex flex-col h-full">
+                        <!-- Header: Icon & Badge -->
+                        <div class="flex justify-between items-start mb-5">
+                            <div class="p-3 rounded-xl bg-${colors.lightBg} text-${colors.primary} border border-${colors.lightBg} shadow-sm group-hover:rotate-6 transition-transform duration-300">
+                                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <use href="#${iconId}"/>
+                                </svg>
+                            </div>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600 border border-gray-200">
+                                ${surveysInCat.length} Kegiatan
+                            </span>
                         </div>
-                    </div>
-                    <div class="mb-5">
-                        <div class="flex justify-between mb-1">
-                            <span class="text-base font-semibold text-gray-600">Progress Total:</span>
-                            <span class="text-base font-semibold text-gray-700">${progress}%</span>
+
+                        <!-- Title -->
+                        <h3 class="text-xl font-bold text-gray-800 mb-auto group-hover:text-${colors.primary} transition-colors leading-tight">
+                            ${kategori}
+                        </h3>
+
+                        <!-- Hero Metric: Progress -->
+                        <div class="mt-6 mb-4">
+                            <div class="flex items-end gap-2 mb-3">
+                                <span class="text-5xl font-black text-gray-900 tracking-tighter group-hover:scale-105 transition-transform origin-left duration-300">${progress}%</span>
+                                <span class="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Selesai</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                                <div class="bg-${colors.primary} h-full rounded-full transition-all duration-1000 ease-out relative group-hover:brightness-110" style="width: ${progress}%"></div>
+                            </div>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-3">
-                            <div class="bg-${colors.primary} h-3 rounded-full" style="width: ${progress}%"></div>
+
+                        <!-- Stats Footer -->
+                        <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100 mt-2">
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Target</p>
+                                <p class="text-lg font-bold text-gray-700 font-mono">${totalTarget.toLocaleString('id-ID')}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Realisasi</p>
+                                <p class="text-lg font-bold text-${colors.primary} font-mono">${totalRealisasi.toLocaleString('id-ID')}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4 text-base pt-4 border-t border-gray-100">
-                        <p class="text-gray-500 font-medium">Target: <span class="text-gray-900 font-semibold">${totalTarget.toLocaleString('id-ID')}</span> unit</p>
-                        <p class="text-gray-500 font-medium">Realisasi: <span class="text-green-600 font-semibold">${totalRealisasi.toLocaleString('id-ID')}</span> unit</p>
                     </div>
                 `;
                 cardWrapper.appendChild(card); 
@@ -1091,7 +1126,6 @@
 
         let currentSurveysToRender = []; 
 
-        // renderCategorySurveys (monitoring)
         function renderCategorySurveys(category) {
             surveyListContainer.innerHTML = '';
             const headerContainer = document.createElement('div');
@@ -1100,7 +1134,7 @@
             backButton.className = 'text-gray-600 hover:text-orange-600 transition p-2 rounded-full hover:bg-gray-100';
             backButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12" /></svg>`;
             backButton.title = 'Kembali ke Dasbor Kategori';
-            backButton.addEventListener('click', () => setMonitoringView(null)); // Modifikasi di sini
+            backButton.addEventListener('click', () => setMonitoringView(null)); 
             headerContainer.appendChild(backButton);
             const categoryTitle = document.createElement('h2');
             categoryTitle.className = 'text-3xl font-extrabold text-gray-800';
@@ -1110,23 +1144,11 @@
             
             let surveys = allSurveysData.filter(s => s.kategori === category);
             
-            // MODIFIKASI PENGURUTAN: Status Priority -> Bulan Mulai -> Nama
             surveys.sort((a, b) => {
-                // 1. Prioritas Status (Berjalan < Selesai < Belum < N/A)
-                if (a.status_priority !== b.status_priority) {
-                    return a.status_priority - b.status_priority;
-                }
-                
-                // 2. Jadwal Kegiatan (Bulan Mulai) - Ascending (Januari dulu)
-                // Parse bulan, jika kosong/invalid dianggap 99 (paling akhir)
+                if (a.status_priority !== b.status_priority) return a.status_priority - b.status_priority;
                 const monthA = parseInt(a.bulan_mulai, 10) || 99;
                 const monthB = parseInt(b.bulan_mulai, 10) || 99;
-                
-                if (monthA !== monthB) {
-                    return monthA - monthB;
-                }
-                
-                // 3. Nama (Alphabetical)
+                if (monthA !== monthB) return monthA - monthB;
                 return a.nama.localeCompare(b.nama);
             });
             
@@ -1142,7 +1164,6 @@
             }
         }
         
-        // displaySurveys (monitoring)
         function displaySurveys(surveys, category) {
             const cardsContainer = document.getElementById('survey-cards-container');
             if (!cardsContainer) return;
@@ -1191,7 +1212,6 @@
             });
         }
         
-        // filterSurveys (monitoring)
         function filterSurveys() {
             if (currentViewCategory === null) return;
             const searchTerm = searchInput.value.toLowerCase().trim();
@@ -1291,11 +1311,11 @@
             activeButton.classList.remove('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
         }
         
-        // --- FUNGSI RENDER (SNAPSHOT - BARU) ---
+        // --- FUNGSI RENDER (SNAPSHOT - REDESIGNED) ---
         
         function calculatePercentageChange(current, previous) {
             if (previous === 0) {
-                return (current > 0) ? 100.0 : 0.0; // Jika sebelumnya 0 dan sekarang positif, anggap 100%
+                return (current > 0) ? 100.0 : 0.0;
             }
             return ((current - previous) / previous) * 100;
         }
@@ -1303,18 +1323,14 @@
         function renderSnapshotView() {
             if (currentMainView !== 'snapshot') return;
             
-            snapshotCardsContainer.innerHTML = ''; // Kosongkan kontainer
+            snapshotCardsContainer.innerHTML = '';
             currentQuarterSelection = snapshotQuarterSelect.value;
             
-            // Tentukan kolom mana yang akan dibandingkan
             const [currentQuarterKey, previousQuarterKey] = currentQuarterSelection.split('_vs_');
-            
-            // KONFIGURASI BARU: Tentukan nama kolom untuk fenomena berdasarkan pilihan dropdown
-            // Pastikan di Google Sheet Anda menambahkan kolom header seperti: 
-            // 'fenomena_q1_2026_vs_q4_2025', 'fenomena_q2_2026_vs_q1_2026', dst.
             const phenomenonKey = 'fenomena_' + currentQuarterSelection;
             
-            const selectionText = snapshotQuarterSelect.options[snapshotQuarterSelect.selectedIndex].text;
+            const rawSelectionText = snapshotQuarterSelect.options[snapshotQuarterSelect.selectedIndex].text;
+            const selectionText = rawSelectionText.replace(" vs ", " / ");
 
             if (allSnapshotData.length === 0) {
                 snapshotCardsContainer.innerHTML = `<p class="text-gray-500 text-center mt-12 md:col-span-4">Data snapshot tidak ditemukan. Periksa GID dan isi spreadsheet.</p>`;
@@ -1324,57 +1340,70 @@
             allSnapshotData.forEach(activity => {
                 const currentValue = parseFloat(activity[currentQuarterKey]) || 0;
                 const previousValue = parseFloat(activity[previousQuarterKey]) || 0;
-                
-                // Ambil data fenomena dari CSV, default ke strip jika kosong
-                const phenomenonText = activity[phenomenonKey] ? activity[phenomenonKey] : "-";
-                
+                const phenomenonText = activity[phenomenonKey] ? activity[phenomenonKey] : "Belum ada catatan fenomena untuk periode ini.";
                 const percentageChange = calculatePercentageChange(currentValue, previousValue);
                 
-                let changeClass = 'neutral';
-                let changeIcon = '−'; // Minus sign / Strip
+                let textColorClass = 'text-gray-600';
+                let borderLeftColorClass = 'border-gray-300';
+                let changeIcon = '—';
                 
                 if (percentageChange > 0) {
-                    changeClass = 'positive';
-                    changeIcon = '▲'; // Arrow up
+                    textColorClass = 'text-emerald-600';
+                    borderLeftColorClass = 'border-emerald-400 bg-emerald-50';
+                    changeIcon = '▲';
                 } else if (percentageChange < 0) {
-                    changeClass = 'negative';
-                    changeIcon = '▼'; // Arrow down
+                    textColorClass = 'text-rose-600';
+                    borderLeftColorClass = 'border-rose-400 bg-rose-50';
+                    changeIcon = '▼';
                 }
 
                 const card = document.createElement('div');
-                // Layout flex column agar footer (persentase) selalu di bawah
-                card.className = 'snapshot-card bg-white p-6 rounded-xl shadow-lg border border-gray-200 flex flex-col h-full';
+                // Desain Kartu Baru
+                card.className = 'group relative bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full overflow-hidden';
                 
-                // TAMPILAN DENGAN FENOMENA (Background bulat dihilangkan)
                 card.innerHTML = `
-                    <div class="flex-grow">
-                        <div class="flex items-start justify-between gap-4 mb-2">
-                            <h3 class="text-lg font-bold text-gray-800 leading-tight">${activity.nama_kegiatan}</h3>
-                            <!-- Background bulat (bg-gray-50, rounded-full, border, p-2) dihapus -->
-                            <div class="snapshot-card-icon flex-shrink-0 text-orange-600">
-                                <svg class="w-full h-full" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <use href="#icon-${activity.icon_id || 'mamin'}"/>
-                                </svg>
-                            </div>
+                    <!-- Decorative Background Circle -->
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-gray-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500 ease-in-out z-0"></div>
+                    
+                    <!-- Header Content (z-10 relative) -->
+                    <div class="relative z-10 flex justify-between items-start mb-6">
+                        <div class="flex-1 pr-4">
+                            <span class="inline-block py-1 px-3 rounded-full text-[10px] font-bold tracking-wider uppercase text-gray-500 bg-gray-100 mb-2">
+                                ${selectionText}
+                            </span>
+                            <h3 class="text-lg font-extrabold text-gray-800 leading-snug group-hover:text-orange-600 transition-colors">
+                                ${activity.nama_kegiatan}
+                            </h3>
                         </div>
-                        <p class="text-xs text-gray-500 font-medium mb-4 border-b border-gray-100 pb-2">${selectionText}</p>
-                        
-                        <!-- BAGIAN FENOMENA BARU -->
-                        <div class="mb-4 bg-slate-50 rounded-lg p-3 border border-slate-100">
-                            <p class="text-[10px] uppercase font-bold text-gray-400 mb-1 tracking-wider">Fenomena</p>
-                            <p class="text-sm text-gray-600 italic leading-relaxed">
-                                "${phenomenonText}"
-                            </p>
+                        <div class="flex-shrink-0 p-3 rounded-xl bg-orange-50 text-orange-600 shadow-sm group-hover:rotate-12 transition-transform duration-300 border border-orange-100">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="#icon-${activity.icon_id || 'mamin'}"/>
+                            </svg>
                         </div>
                     </div>
-                    
-                    <div class="mt-auto">
-                        <div class="snapshot-card-change ${changeClass} rounded-xl p-5 text-center transition-colors duration-300">
-                            <span class="block text-xs font-bold uppercase tracking-widest opacity-70 mb-1">Pertumbuhan</span>
-                            <div class="text-4xl font-extrabold flex items-center justify-center gap-2">
-                                <span class="text-3xl">${changeIcon}</span>
-                                <!-- Menggunakan Math.abs agar tidak ada double minus (▼ -5%) -->
-                                <span>${Math.abs(percentageChange).toFixed(2)}%</span>
+
+                    <!-- Growth Stat (Hero Metric) -->
+                    <div class="relative z-10 pb-6 mb-4 border-b border-dashed border-gray-200">
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-4xl font-black ${textColorClass}">
+                                ${changeIcon} ${Math.abs(percentageChange).toFixed(2)}%
+                            </span>
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wide">q-to-q</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1 font-medium">Pertumbuhan Ekonomi</p>
+                    </div>
+
+                    <!-- Phenomenon Insight Box -->
+                    <div class="relative z-10 mt-auto">
+                        <div class="rounded-xl p-4 border-l-4 ${borderLeftColorClass} shadow-sm bg-opacity-50">
+                             <div class="flex items-center gap-2 mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                <p class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Insight Fenomena</p>
+                             </div>
+                            <div class="max-h-32 overflow-y-auto scrollbar-hide">
+                                <p class="text-sm text-gray-700 leading-relaxed italic">
+                                    "${phenomenonText}"
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -1383,35 +1412,29 @@
             });
         }
 
-
-        // --- EVENT LISTENERS (GLOBAL & INISIALISASI) ---
+        // --- EVENT LISTENERS ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Selalu muat data monitoring terlebih dahulu saat membuka
             fetchMonitoringData(true); 
-            startAutoRefresh(); // Mulai timer auto-refresh untuk data monitoring
+            fetchSnapshotData(true); 
+            startAutoRefresh(); 
             
-            // Listener untuk Navigasi Utama
             monitoringViewBtn.addEventListener('click', () => switchMainView('monitoring'));
             snapshotViewBtn.addEventListener('click', () => switchMainView('snapshot'));
             
-            // Listener untuk Dropdown Snapshot
             snapshotQuarterSelect.addEventListener('change', renderSnapshotView);
 
-            // Listener Modal (Monitoring)
             closeModalBtn.addEventListener('click', closeModal);
             modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
             modalTabs.addEventListener('click', (e) => {
                 if (e.target.classList.contains('tab-button')) switchTab(e.target.getAttribute('data-tab'));
             });
             
-            // Listener Tombol Export (Monitoring)
             exportSummaryBtn.addEventListener('click', exportSurveySummaryToCSV);
             exportSampelBtn.addEventListener('click', () => {
                 const surveyId = exportSampelBtn.getAttribute('data-current-survey-id');
                 if (sampelTable) exportTableToCSV(sampelTable, `Data_Sampel_${surveyId}_${new Date().toISOString().slice(0, 10)}.csv`);
             });
             
-            // Listener Kartu Floating
             closeFloatingSummaryBtn.addEventListener('click', () => floatingSummaryCard.classList.add('hidden'));
             downloadSummaryBtn.addEventListener('click', () => floatingSummaryCard.classList.add('hidden'));
         });
