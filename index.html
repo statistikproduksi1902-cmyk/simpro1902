@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Monitoring Produksi</title>
+    <title>Sistem Monitoring Produksi SIMPRO</title>
     <!-- Memuat Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Memuat Font Inter -->
@@ -33,21 +33,24 @@
             position: relative;
             box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
             border: 1px solid #e2e8f0; /* slate-200 */
+            overflow-x: auto; /* Allow scrolling on small screens if needed */
+            max-width: 100%;
         }
         
         .nav-segment-btn {
-            padding: 0.6rem 1.5rem;
+            padding: 0.6rem 1.2rem; /* Slightly reduced padding to fit 3 buttons */
             border-radius: 9999px;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #64748b; /* slate-500 */
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
             position: relative;
             z-index: 1;
             outline: none;
+            white-space: nowrap;
         }
 
         .nav-segment-btn:hover {
@@ -80,13 +83,14 @@
 
         /* START Style Badge Status yang Lebih Menonjol */
         .status-badge {
-            padding: 0.3rem 0.7rem; /* Padding sedikit lebih besar */
-            font-size: 0.8rem; /* Font size lebih besar dari text-xs */
-            font-weight: 700; /* Font bold */
-            border-radius: 9999px; /* rounded-full */
+            padding: 0.2rem 0.5rem; /* Padding diperkecil untuk dalam tabel */
+            font-size: 0.7rem; 
+            font-weight: 700; 
+            border-radius: 9999px; 
             text-transform: uppercase;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* subtle shadow */
-            border-width: 1px; /* Tambahkan border */
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); 
+            border-width: 1px; 
+            display: inline-block;
         }
 
         /* Penyesuaian warna untuk status */
@@ -120,6 +124,22 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        
+        /* Hide scrollbar for table container but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            height: 8px;
+        }
+        .no-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 4px;
+        }
+        .no-scrollbar::-webkit-scrollbar-thumb {
+            background: #d1d5db; 
+            border-radius: 4px;
+        }
+        .no-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af; 
+        }
     </style>
 </head>
 <body class="min-h-screen text-gray-800">
@@ -127,11 +147,13 @@
     <!-- Header -->
     <header class="bg-white shadow-md sticky top-0 z-40 border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                
-                <!-- Logo & Judul -->
-                <div class="flex items-center space-x-4 w-full md:w-auto">
-                    <div class="bg-orange-50 p-2 rounded-xl border border-orange-100">
+            
+            <!-- Baris Atas: Logo & Judul + Status -->
+            <div class="flex flex-col md:flex-row justify-between items-center mb-4 md:mb-6 gap-4">
+                <!-- Logo & Branding SIMPRO -->
+                <div class="flex items-center space-x-4 w-full md:w-auto justify-center md:justify-start">
+                    <!-- Logo Icon dengan Shadow & Gradient halus -->
+                    <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-2.5 rounded-2xl border border-orange-200 shadow-sm">
                         <svg class="h-8 w-8 text-orange-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect width="7" height="9" x="3" y="3" rx="1"/>
                             <rect width="7" height="5" x="14" y="3" rx="1"/>
@@ -139,30 +161,21 @@
                             <rect width="7" height="5" x="3" y="16" rx="1"/>
                         </svg>
                     </div>
-                    <div>
-                        <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-gray-900 leading-tight">
-                            Sistem Monitoring Produksi
-                        </h1>
-                        <p class="text-xs md:text-sm font-medium text-gray-500">BPS Kabupaten Belitung</p>
-                    </div>
-                </div>
-
-                <!-- Menu Navigasi Tengah (DESAIN BARU) -->
-                <div class="order-3 md:order-2 w-full md:w-auto flex justify-center">
-                    <div class="nav-segment-container">
-                        <button id="monitoring-view-btn" class="nav-segment-btn active">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-                            Monitoring Survei
-                        </button>
-                        <button id="snapshot-view-btn" class="nav-segment-btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-                            Snapshot Triwulanan
-                        </button>
+                    
+                    <!-- Teks Branding -->
+                    <div class="text-center md:text-left">
+                        <div class="flex items-baseline gap-2 justify-center md:justify-start">
+                            <h1 class="text-3xl font-black tracking-tighter text-gray-900 leading-none">
+                                SIMPRO
+                            </h1>
+                        </div>
+                        <p class="text-sm font-semibold text-gray-600 leading-tight">Sistem Monitoring Produksi</p>
+                        <p class="text-[10px] font-medium text-gray-400 tracking-wide uppercase mt-0.5">BPS Kabupaten Belitung</p>
                     </div>
                 </div>
                 
                 <!-- Status Update Terakhir -->
-                <div id="refresh-status" class="order-2 md:order-3 text-right min-w-[150px] hidden md:block">
+                <div id="refresh-status" class="text-right min-w-[150px] hidden md:block">
                     <p id="refresh-badge" class="inline-flex items-center justify-center text-xs font-medium bg-slate-50 border border-slate-200 rounded-full px-3 py-1.5 text-gray-500">
                         <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1.5 text-orange-500">
                             <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
@@ -172,6 +185,25 @@
                     </p>
                 </div>
             </div>
+
+            <!-- Baris Bawah: Menu Navigasi (Left Aligned on Desktop) -->
+            <div class="flex justify-center md:justify-start w-full overflow-x-auto">
+                <div class="nav-segment-container w-full md:w-auto justify-between md:justify-start min-w-max">
+                    <button id="monitoring-view-btn" class="nav-segment-btn active">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                        Monitoring Survei
+                    </button>
+                    <button id="directory-view-btn" class="nav-segment-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+                        Direktori Sampel
+                    </button>
+                    <button id="snapshot-view-btn" class="nav-segment-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                        Snapshot Triwulanan
+                    </button>
+                </div>
+            </div>
+            
         </div>
     </header>
 
@@ -193,7 +225,7 @@
             <p id="error-details" class="text-base text-red-600 mt-2">Periksa kembali URL Google Sheet dan pastikan sudah dipublikasikan.</p>
         </div>
 
-        <!-- Kontainer View Monitoring Survei -->
+        <!-- 1. Kontainer View Monitoring Survei -->
         <div id="monitoring-view">
             <!-- Judul Dinamis & Konten Survei -->
             <div id="survey-list">
@@ -201,7 +233,62 @@
             </div>
         </div>
         
-        <!-- Kontainer View Snapshot Triwulanan (Hidden by default) -->
+        <!-- 2. Kontainer View Direktori Sampel (MODIFIED) -->
+        <div id="directory-view" class="hidden">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Direktori Sampel Responden</h2>
+                <p class="text-gray-500 text-sm">Daftar lengkap perusahaan/sampel dengan riwayat survei.</p>
+            </div>
+
+            <!-- Search & Filter Bar -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6 flex flex-col md:flex-row gap-4">
+                <div class="flex-grow relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" id="directory-search-input" 
+                        class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-orange-500 focus:border-orange-500 sm:text-sm" 
+                        placeholder="Cari nama responden, ID, alamat, atau petugas...">
+                </div>
+                <div class="flex-shrink-0">
+                    <span id="directory-count-badge" class="inline-flex items-center px-4 py-2.5 border border-transparent text-sm font-medium rounded-lg text-orange-700 bg-orange-100">
+                        Total: 0 Responden
+                    </span>
+                </div>
+            </div>
+
+            <!-- Tabel Direktori -->
+            <div class="bg-white shadow-lg rounded-xl border border-gray-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-24">ID Sampel</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Nama Responden / Usaha</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Kegiatan Survei & Status</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Alamat</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Petugas PCL</th>
+                            </tr>
+                        </thead>
+                        <tbody id="directory-table-body" class="bg-white divide-y divide-gray-200">
+                            <!-- Rows will be populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination / Load More Placeholder (Optional) -->
+                <div id="directory-empty-state" class="hidden p-12 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">Tidak ada data ditemukan</h3>
+                    <p class="mt-1 text-sm text-gray-500">Coba kata kunci pencarian lain.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Kontainer View Snapshot Triwulanan (Hidden by default) -->
         <div id="snapshot-view" class="hidden">
             <!-- Header Snapshot (Judul & Dropdown) -->
             <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
@@ -362,10 +449,26 @@
                             </div>
                         </div>
                         
-                        <!-- Tab Sampel -->
+                        <!-- Tab Sampel (DENGAN TOMBOL GULIR) -->
                         <div id="tab-sampel" class="tab-content hidden">
-                            <!-- Tabel Sampel harus memiliki ID untuk diekspor -->
-                            <div class="overflow-x-auto rounded-lg shadow-md border border-gray-200">
+                            <!-- Kontrol Navigasi Tabel (Scroll Manual) -->
+                            <div class="flex justify-between items-center mb-3">
+                                <div class="flex space-x-2">
+                                    <button id="table-scroll-left" class="p-2 bg-white border border-gray-300 rounded-lg shadow-sm text-gray-600 hover:bg-gray-50 hover:text-orange-600 transition active:bg-gray-100 active:scale-95" title="Geser Kiri">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                                    </button>
+                                    <button id="table-scroll-right" class="p-2 bg-white border border-gray-300 rounded-lg shadow-sm text-gray-600 hover:bg-gray-50 hover:text-orange-600 transition active:bg-gray-100 active:scale-95" title="Geser Kanan">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                    </button>
+                                    <span class="text-xs text-gray-400 flex items-center ml-2 italic hidden md:flex">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                        Gunakan tombol jika tabel terpotong
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Tabel Sampel Container (Dengan ID untuk Scroll) -->
+                            <div id="modal-sampel-container" class="overflow-x-auto overflow-y-auto max-h-[60vh] rounded-lg shadow-md border border-gray-200 relative bg-white no-scrollbar">
                                 <table id="sampel-table" class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-100">
                                         <tr>
@@ -455,32 +558,28 @@
         <svg id="icon-tambang" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10Z"/><path d="M12 2v6h6"/><path d="M10 13a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/><path d="m14 17-2-2-2 2"/><path d="m10 17 2-2 2 2"/></svg>
         <svg id="icon-gali" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 22H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2Z"/><path d="M12 17a3 3 0 0 0 3-3V8a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/></svg>
         <svg id="icon-cpo" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-7-6.5-7-12.5a7 7 0 0 1 14 0c0 6-7 12.5-7 12.5Z"/><path d="M12 12a2.5 2.5 0 0 0 0-5 2.5 2.5 0 0 0 0 5Z"/></svg>
-        <svg id="icon-mamin" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M16 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M8 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M20 16.5v-3.4a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 1-.4-.5v-1.6a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 1-.4-.5V6.6a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 0-.8 0l-2.7.9a.6.6 0 0 0-.4.5v1.6a.6.6 0 0 1-.4.5l-2.7.9a.6.6 0 0 0-.4.5v3.4a.6.6 0 0 0 .4.5l2.7.9a.6.6 0 0 1 .4.5v1.6a.6.6 0 0 0 .4.5l2.7.9a.6.6 0 0 1 .8 0l2.7-.9a.6.6 0 0 0 .4-.5v-1.6a.6.6 0 0 1 .4-.5l2.7-.9a.6.6 0 0 0 .4-.5Z"/></svg>
+        <svg id="icon-mamin" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M16 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M8 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M20 16.5v-3.4a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 1-.4-.5v-1.6a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 1-.4-.5V6.6a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 0-.8 0l-2.7.9a.6.6 0 0 0-.4.5v1.6a.6.6 0 0 1-.4.5l-2.7.9a.6.6 0 0 0-.4.5v3.4a.6.6 0 0 0 .4.5l2.7.9a.6.6 0 0 1 .4.5v1.6a.6.6 0 0 0 .4.5l2.7.9a.6.6 0 0 1 .8 0l2.7-.9a.6.6 0 0 0 .4-.5v-1.6a.6.6 0 0 1 .4-.5l2.7-.9a.6.6 0 0 0 .4-.5Z"/></svg>
       </defs>
     </svg>
 
 
     <script>
         // --- KONFIGURASI GOOGLE SHEET & AUTO REFRESH ---
-        // URL CSV Anda telah terisi dengan data contoh yang sebelumnya diberikan.
         const SURVEYS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV7Yuu82zCho9LP8-w2M7KdcHesZMG2ZkE0h7luPscpkbYYgqC1HVmE9f95zT17Wy3Z3ktg3g5h0ks/pub?gid=0&single=true&output=csv';
         const SAMPEL_CSV_URL =  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV7Yuu82zCho9LP8-w2M7KdcHesZMG2ZkE0h7luPscpkbYYgqC1HVmE9f95zT17Wy3Z3ktg3g5h0ks/pub?gid=1637428951&single=true&output=csv';
         const ASSIGNMENTS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV7Yuu82zCho9LP8-w2M7KdcHesZMG2ZkE0h7luPscpkbYYgqC1HVmE9f95zT17Wy3Z3ktg3g5h0ks/pub?gid=2028943161&single=true&output=csv';
         const STAFF_MASTER_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV7Yuu82zCho9LP8-w2M7KdcHesZMG2ZkE0h7luPscpkbYYgqC1HVmE9f95zT17Wy3Z3ktg3g5h0ks/pub?gid=824879186&single=true&output=csv';
-        
-        // --- BARU: URL UNTUK DATA SNAPSHOT TRIWULANAN ---
         const SNAPSHOT_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV7Yuu82zCho9LP8-w2M7KdcHesZMG2ZkE0h7luPscpkbYYgqC1HVmE9f95zT17Wy3Z3ktg3g5h0ks/pub?gid=396773127&single=true&output=csv';
-        // --- END BARU ---
 
-        
         // Interval refresh otomatis (dalam milidetik) - 180000ms = 3 menit
         const REFRESH_INTERVAL_MS = 180000; 
         
         // --- GLOBAL STATE & DATA ---
-        let currentMainView = 'monitoring'; // 'monitoring' atau 'snapshot'
+        let currentMainView = 'monitoring'; // 'monitoring', 'snapshot', atau 'directory'
         
         // Data Monitoring
         let allSurveysData = [];
+        let allSamplesRawData = []; // Data Sampel Mentah untuk Direktori
         let currentViewCategory = null; // null = Dashboard Kategori, string = Nama Kategori
         const MAIN_CATEGORIES = ['Statistik PEK', 'Statistik Industri', 'Statistik Pertanian'];
         let allStaffMap = {};
@@ -538,11 +637,19 @@
         const refreshIcon = document.getElementById('refresh-icon'); 
         const monitoringViewBtn = document.getElementById('monitoring-view-btn');
         const snapshotViewBtn = document.getElementById('snapshot-view-btn');
+        const directoryViewBtn = document.getElementById('directory-view-btn'); // Tombol baru
 
         // --- ELEMEN DOM (Snapshot) ---
         const snapshotView = document.getElementById('snapshot-view');
         const snapshotQuarterSelect = document.getElementById('snapshot-quarter-select');
         const snapshotCardsContainer = document.getElementById('snapshot-cards-container');
+
+        // --- ELEMEN DOM (Direktori Sampel) ---
+        const directoryView = document.getElementById('directory-view');
+        const directoryTableBody = document.getElementById('directory-table-body');
+        const directorySearchInput = document.getElementById('directory-search-input');
+        const directoryCountBadge = document.getElementById('directory-count-badge');
+        const directoryEmptyState = document.getElementById('directory-empty-state');
 
         // Elemen Kartu Fixed
         const floatingSummaryCard = document.getElementById('floating-summary');
@@ -552,14 +659,13 @@
         const summaryTimeElapsed = document.getElementById('summary-time-elapsed');
         const downloadSummaryBtn = document.getElementById('download-summary-btn');
         
-        // --- FUNGSI UTILITAS GLOBAL (Tidak berubah) ---
+        // --- FUNGSI UTILITAS GLOBAL ---
 
         function getSurveyOverallStatus(realisasi, target, bulanMulai, bulanSelesai, currentMonth) {
             if (target === 0) return { status: 'N/A', badge: 'status-na', priority: 4 }; // N/A
             if (realisasi >= target) return { status: 'Selesai', badge: 'status-selesai', priority: 2 }; 
             if (realisasi > 0) return { status: 'Sedang Berjalan', badge: 'status-berjalan', priority: 1 };
             
-            // Logika untuk 'Belum Berjalan' (realisasi === 0)
             const TARGET_YEAR = 2026; 
             const surveyYear = allSurveysData.find(s => s.id === this.id)?.tahun_kegiatan;
             const useEffectiveMonth = (parseInt(surveyYear, 10) === TARGET_YEAR);
@@ -577,7 +683,7 @@
         
         function getStatusBadge(status) {
             if (!status) return 'status-na';
-            switch (status) {
+            switch (status.trim().toLowerCase()) {
                 case 'selesai': return 'status-selesai';
                 case 'proses': return 'status-berjalan'; 
                 case 'belum': return 'status-belum';
@@ -616,7 +722,6 @@
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                    console.log('File ' + filename + ' berhasil diekspor!'); 
                 }
             } catch (error) {
                 console.error("Gagal membuat atau mengunduh Blob:", error);
@@ -665,7 +770,7 @@
             return result;
         }
 
-        // --- FUNGSI AUTO REFRESH DAN STATUS (Tidak berubah) ---
+        // --- FUNGSI AUTO REFRESH DAN STATUS ---
         function updateRefreshStatus(success) {
             const now = new Date();
             const dateTimeFormatOptions = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
@@ -685,7 +790,7 @@
                 refreshIcon.classList.remove('text-orange-500');
                 refreshIcon.classList.add('text-red-500');
             }
-            refreshIcon.classList.remove('animate-spin'); // STOP SPIN
+            refreshIcon.classList.remove('animate-spin'); 
         }
         
         function startAutoRefresh() {
@@ -693,11 +798,11 @@
             updateRefreshStatus(lastUpdateTimestamp !== null); 
             refreshTimer = setInterval(() => {
                 console.log("Auto-refresh: Memulai pengambilan data monitoring...");
-                fetchMonitoringData(false); // Hanya refresh data monitoring
+                fetchMonitoringData(false); 
             }, REFRESH_INTERVAL_MS);
         }
 
-        // --- FUNGSI EXPORT (Tidak berubah) ---
+        // --- FUNGSI EXPORT ---
         function exportSurveySummaryToCSV() {
             const startTime = performance.now(); 
             if (allSurveysData.length === 0) {
@@ -759,7 +864,7 @@
             }
         }
 
-        // --- FUNGSI FETCH DATA (DIMODIFIKASI) ---
+        // --- FUNGSI FETCH DATA ---
         
         async function fetchMonitoringData(isInitialLoad = true) {
             if (isInitialLoad) {
@@ -784,8 +889,11 @@
 
                 const surveysJSON = csvToJSON(surveyCSV);
                 const assignmentsJSON = csvToJSON(assignmentsCSV); 
-                const sampelJSON = csvToJSON(sampelCSV);
+                const sampelJSON = csvToJSON(sampelCSV); // Data Sampel Mentah
                 const staffMasterJSON = csvToJSON(staffMasterCSV); 
+
+                // Simpan data sampel mentah ke variabel global untuk fitur Direktori
+                allSamplesRawData = sampelJSON;
 
                 allStaffMap = {};
                 staffMasterJSON.forEach(staff => {
@@ -795,15 +903,21 @@
                 });
 
                 allSurveysData = buildStructuredData(surveysJSON, assignmentsJSON, sampelJSON);
-                updateRefreshStatus(true); // Pembaruan status berhasil
+                updateRefreshStatus(true); 
 
                 if (isInitialLoad) {
-                    createSearchDOM(); // Buat DOM pencarian
-                    renderMainView(); // Render kategori
-                    showGlobalLoading(false); // Sembunyikan loading
+                    createSearchDOM(); 
+                    renderMainView(); 
+                    showGlobalLoading(false); 
                     updateExportButtonVisibility(); 
+                    // Render direktori awal juga (walaupun hidden) agar siap
+                    renderSampleDirectory();
                 } else {
-                    renderMainView(); // Re-render saat auto-refresh
+                    renderMainView();
+                    // Re-render direktori jika sedang aktif
+                    if (currentMainView === 'directory') {
+                        renderSampleDirectory();
+                    }
                 }
 
             } catch (error) {
@@ -853,7 +967,7 @@
             }
         }
 
-        // --- FUNGSI STRUKTUR DATA (Monitoring - Tidak berubah) ---
+        // --- FUNGSI STRUKTUR DATA ---
         function buildStructuredData(surveys, assignments, sampel) {
             const processedSampel = sampel.map(s => ({ ...s, statusLower: s.status ? s.status.trim().toLowerCase() : '' }));
             let totalTargetTahunan = 0, totalRealisasiTahunan = 0;
@@ -915,19 +1029,27 @@
         function switchMainView(viewName) {
             currentMainView = viewName;
             
+            // Reset Nav Buttons
+            monitoringViewBtn.classList.remove('active');
+            snapshotViewBtn.classList.remove('active');
+            directoryViewBtn.classList.remove('active');
+            
+            // Hide All Views
+            monitoringView.classList.add('hidden');
+            snapshotView.classList.add('hidden');
+            directoryView.classList.add('hidden');
+
             if (viewName === 'monitoring') {
                 monitoringView.classList.remove('hidden');
-                snapshotView.classList.add('hidden');
                 monitoringViewBtn.classList.add('active');
-                snapshotViewBtn.classList.remove('active');
                 renderMainView();
-                
+            } else if (viewName === 'directory') {
+                directoryView.classList.remove('hidden');
+                directoryViewBtn.classList.add('active');
+                renderSampleDirectory();
             } else if (viewName === 'snapshot') {
-                monitoringView.classList.add('hidden');
                 snapshotView.classList.remove('hidden');
-                monitoringViewBtn.classList.remove('active');
                 snapshotViewBtn.classList.add('active');
-                
                 if (!isSnapshotDataFetched) {
                     fetchSnapshotData(false); 
                 } else {
@@ -948,6 +1070,7 @@
                 errorMessage.style.display = 'none';
                 monitoringView.classList.add('hidden');
                 snapshotView.classList.add('hidden');
+                directoryView.classList.add('hidden');
             }
         }
 
@@ -958,6 +1081,7 @@
             errorMessage.style.display = 'block';
             monitoringView.classList.add('hidden');
             snapshotView.classList.add('hidden');
+            directoryView.classList.add('hidden');
         }
 
         // --- FUNGSI RENDER (MONITORING) ---
@@ -1011,7 +1135,7 @@
             const progressTahunan = calculateProgress(totalRealisasi, totalTarget);
             const progressColor = progressTahunan >= 90 ? 'bg-emerald-500' : progressTahunan >= 50 ? 'bg-yellow-500' : 'bg-red-500';
 
-            // Kartu Ringkasan Tahunan (Tetap)
+            // Kartu Ringkasan Tahunan
             const annualSummaryHtml = `
                 <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-100 mb-10 relative overflow-hidden group hover:shadow-xl transition-all duration-300">
                     <div class="absolute -top-16 -right-16 w-48 h-48 bg-orange-50 rounded-full opacity-60 z-0"></div>
@@ -1062,12 +1186,9 @@
                 const iconId = getCategoryIcon(kategori);
 
                 const cardWrapper = document.createElement('div');
-                // const isLastOddItem = index === MAIN_CATEGORIES.length - 1 && MAIN_CATEGORIES.length % 2 !== 0;
-                // cardWrapper.className = isLastOddItem ? 'md:col-span-2 lg:col-span-1 flex justify-center' : 'col-span-1'; 
                 cardWrapper.className = 'col-span-1';
                 
                 const card = document.createElement('div');
-                // Desain Kartu Kategori Baru (Bento Grid Style)
                 card.className = 'group relative bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 cursor-pointer w-full h-full overflow-hidden';
                 card.setAttribute('data-category', kategori);
                 card.addEventListener('click', () => setMonitoringView(kategori)); 
@@ -1077,7 +1198,6 @@
                     <div class="absolute -top-12 -right-12 w-40 h-40 bg-${colors.lightBg} rounded-full opacity-30 group-hover:scale-150 transition-transform duration-700 ease-in-out z-0"></div>
                     
                     <div class="relative z-10 flex flex-col h-full">
-                        <!-- Header: Icon & Badge -->
                         <div class="flex justify-between items-start mb-5">
                             <div class="p-3 rounded-xl bg-${colors.lightBg} text-${colors.primary} border border-${colors.lightBg} shadow-sm group-hover:rotate-6 transition-transform duration-300">
                                 <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1089,12 +1209,10 @@
                             </span>
                         </div>
 
-                        <!-- Title -->
                         <h3 class="text-xl font-bold text-gray-800 mb-auto group-hover:text-${colors.primary} transition-colors leading-tight">
                             ${kategori}
                         </h3>
 
-                        <!-- Hero Metric: Progress -->
                         <div class="mt-6 mb-4">
                             <div class="flex items-end gap-2 mb-3">
                                 <span class="text-5xl font-black text-gray-900 tracking-tighter group-hover:scale-105 transition-transform origin-left duration-300">${progress}%</span>
@@ -1105,7 +1223,6 @@
                             </div>
                         </div>
 
-                        <!-- Stats Footer -->
                         <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100 mt-2">
                             <div>
                                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Target</p>
@@ -1311,6 +1428,153 @@
             activeButton.classList.remove('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
         }
         
+        // --- FUNGSI DIREKTORI SAMPEL (MODIFIED) ---
+        function renderSampleDirectory() {
+            if (!allSamplesRawData || allSamplesRawData.length === 0) {
+                directoryTableBody.innerHTML = '';
+                directoryEmptyState.classList.remove('hidden');
+                return;
+            }
+
+            // 1. Grouping Logic
+            const groupedData = {};
+            
+            allSamplesRawData.forEach(sample => {
+                const rawName = sample.deskripsi || '';
+                const nameKey = rawName.trim().toLowerCase();
+                
+                if (!nameKey) return; // Skip empty names
+
+                if (!groupedData[nameKey]) {
+                    groupedData[nameKey] = {
+                        name: rawName,
+                        ids: new Set(),
+                        address: sample.alamat || '',
+                        surveys: [], // Array of objects {id, name, category, status, petugas}
+                        officers: new Set()
+                    };
+                }
+
+                // Add ID
+                if (sample.id) groupedData[nameKey].ids.add(sample.id);
+                
+                // Update Address (prefer longer/existing one)
+                if (!groupedData[nameKey].address && sample.alamat) {
+                    groupedData[nameKey].address = sample.alamat;
+                }
+
+                // Get Survey Info
+                const survey = allSurveysData.find(s => s.id === sample.survey_id);
+                const surveyName = survey ? survey.nama : sample.survey_id;
+                const category = survey ? survey.kategori : '';
+                
+                // Get Petugas Info
+                const staffInfo = allStaffMap[sample.petugas_id] || { nama: '' };
+                const staffName = staffInfo.nama || (sample.petugas_id ? `ID:${sample.petugas_id}` : '');
+                if (staffName) groupedData[nameKey].officers.add(staffName);
+
+                // Add Survey Entry
+                groupedData[nameKey].surveys.push({
+                    name: surveyName,
+                    category: category,
+                    status: sample.status || 'N/A',
+                    pcl: staffName
+                });
+            });
+
+            const groupedArray = Object.values(groupedData);
+
+            // 2. Filtering Logic
+            const searchTerm = directorySearchInput.value.toLowerCase().trim();
+            let filteredGroups = groupedArray;
+
+            if (searchTerm) {
+                filteredGroups = groupedArray.filter(group => {
+                    const idsStr = Array.from(group.ids).join(' ');
+                    const officersStr = Array.from(group.officers).join(' ');
+                    const surveyStr = group.surveys.map(s => s.name).join(' ');
+                    
+                    return (
+                        group.name.toLowerCase().includes(searchTerm) ||
+                        idsStr.toLowerCase().includes(searchTerm) ||
+                        (group.address && group.address.toLowerCase().includes(searchTerm)) ||
+                        officersStr.toLowerCase().includes(searchTerm) ||
+                        surveyStr.toLowerCase().includes(searchTerm)
+                    );
+                });
+            }
+
+            directoryCountBadge.textContent = `Total: ${filteredGroups.length} Responden`;
+            directoryTableBody.innerHTML = '';
+
+            if (filteredGroups.length === 0) {
+                directoryEmptyState.classList.remove('hidden');
+            } else {
+                directoryEmptyState.classList.add('hidden');
+                
+                // Render max 100 groups for performance
+                const maxRows = 100; 
+                const rowsToRender = filteredGroups.slice(0, maxRows);
+
+                rowsToRender.forEach(group => {
+                    // Format IDs
+                    const idDisplay = Array.from(group.ids).map(id => `<span class="font-mono text-xs bg-gray-100 px-1 rounded border border-gray-200 mr-1 mb-1 inline-block">${id}</span>`).join('');
+                    
+                    // Format Surveys (List with Badges)
+                    const surveysDisplay = group.surveys.map(s => {
+                         const badgeClass = getStatusBadge(s.status);
+                         return `
+                            <div class="mb-2 last:mb-0 flex items-start justify-between gap-2 text-xs border-b border-gray-100 last:border-0 pb-1 last:pb-0">
+                                <div>
+                                    <div class="font-semibold text-gray-700">${s.name}</div>
+                                    <div class="text-[10px] text-gray-400">${s.category}</div>
+                                </div>
+                                <span class="status-badge ${badgeClass} scale-75 origin-right whitespace-nowrap">${s.status}</span>
+                            </div>
+                         `;
+                    }).join('');
+
+                    // Format Officers
+                    const officersDisplay = Array.from(group.officers).map(o => `<div class="text-xs text-gray-600 flex items-center gap-1"><svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14c-1.396 0-2.492.35-3.218.895A6.002 6.002 0 0012 21a6.002 6.002 0 003.218-6.105c-.726-.545-1.822-.895-3.218-.895z"/></svg>${o}</div>`).join('');
+
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50 transition-colors align-top';
+                    row.innerHTML = `
+                        <td class="px-6 py-4">
+                            <div class="flex flex-wrap gap-1">${idDisplay}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="font-bold text-gray-900 block text-sm">${group.name}</span>
+                        </td>
+                        <td class="px-6 py-4 min-w-[250px]">
+                            <div class="bg-gray-50 rounded-lg p-2 border border-gray-100">
+                                ${surveysDisplay}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600 max-w-xs">
+                            ${group.address || '-'}
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex flex-col gap-1">
+                                ${officersDisplay || '<span class="text-gray-400 text-xs italic">Belum ada</span>'}
+                            </div>
+                        </td>
+                    `;
+                    directoryTableBody.appendChild(row);
+                });
+                
+                if (filteredGroups.length > maxRows) {
+                    const infoRow = document.createElement('tr');
+                    infoRow.innerHTML = `
+                        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500 bg-gray-50 italic">
+                            Menampilkan ${maxRows} dari ${filteredGroups.length} responden. Gunakan pencarian untuk hasil lebih spesifik.
+                        </td>
+                    `;
+                    directoryTableBody.appendChild(infoRow);
+                }
+            }
+        }
+
         // --- FUNGSI RENDER (SNAPSHOT - REDESIGNED) ---
         
         function calculatePercentageChange(current, previous) {
@@ -1420,13 +1684,28 @@
             
             monitoringViewBtn.addEventListener('click', () => switchMainView('monitoring'));
             snapshotViewBtn.addEventListener('click', () => switchMainView('snapshot'));
+            directoryViewBtn.addEventListener('click', () => switchMainView('directory')); 
             
+            directorySearchInput.addEventListener('input', renderSampleDirectory);
+
             snapshotQuarterSelect.addEventListener('change', renderSnapshotView);
 
             closeModalBtn.addEventListener('click', closeModal);
             modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
             modalTabs.addEventListener('click', (e) => {
                 if (e.target.classList.contains('tab-button')) switchTab(e.target.getAttribute('data-tab'));
+            });
+
+            // EVENT LISTENER UNTUK TOMBOL SCROLL TABEL (BARU)
+            const modalTableContainer = document.getElementById('modal-sampel-container');
+            const scrollAmount = 200;
+
+            document.getElementById('table-scroll-left').addEventListener('click', () => {
+                modalTableContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            });
+
+            document.getElementById('table-scroll-right').addEventListener('click', () => {
+                modalTableContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
             });
             
             exportSummaryBtn.addEventListener('click', exportSurveySummaryToCSV);
