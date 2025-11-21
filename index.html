@@ -142,6 +142,15 @@
         .no-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #9ca3af; 
         }
+        
+        /* Gaya Kalender */
+        .calendar-cell {
+            width: 8.33%; /* 100% / 12 bulan */
+            border-right: 1px solid #f3f4f6;
+        }
+        .calendar-cell:last-child {
+            border-right: none;
+        }
     </style>
 </head>
 <body class="min-h-screen text-gray-800">
@@ -198,6 +207,10 @@
                     <button id="directory-view-btn" class="nav-segment-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
                         Direktori Sampel
+                    </button>
+                    <button id="calendar-view-btn" class="nav-segment-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        Kalender Kegiatan
                     </button>
                     <button id="snapshot-view-btn" class="nav-segment-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
@@ -290,7 +303,32 @@
             </div>
         </div>
 
-        <!-- 3. Kontainer View Snapshot Triwulanan (Hidden by default) -->
+        <!-- 3. Kontainer View Kalender Kegiatan (DENGAN FILTER) -->
+        <div id="calendar-view" class="hidden">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Kalender Kegiatan</h2>
+                    <p class="text-gray-500 text-sm">Jadwal pelaksanaan survei berdasarkan bulan mulai dan selesai.</p>
+                </div>
+                
+                <!-- Filter Kategori Kalender -->
+                <div class="flex-shrink-0">
+                    <select id="calendar-category-select" 
+                            class="w-full md:w-auto p-2.5 border border-gray-300 rounded-lg bg-white font-semibold text-gray-700 focus:ring-2 focus:ring-orange-500 cursor-pointer text-sm shadow-sm">
+                        <option value="Statistik PEK">Statistik PEK</option>
+                        <option value="Statistik Industri">Statistik Industri</option>
+                        <option value="Statistik Pertanian">Statistik Pertanian</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Calendar Container -->
+            <div id="calendar-container">
+                <!-- Content will be rendered by JS -->
+            </div>
+        </div>
+
+        <!-- 4. Kontainer View Snapshot Triwulanan (Hidden by default) -->
         <div id="snapshot-view" class="hidden">
             <!-- Header Snapshot (Judul & Dropdown) -->
             <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
@@ -600,7 +638,7 @@
         <svg id="icon-tambang" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10Z"/><path d="M12 2v6h6"/><path d="M10 13a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/><path d="m14 17-2-2-2 2"/><path d="m10 17 2-2 2 2"/></svg>
         <svg id="icon-gali" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 22H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2Z"/><path d="M12 17a3 3 0 0 0 3-3V8a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/></svg>
         <svg id="icon-cpo" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-7-6.5-7-12.5a7 7 0 0 1 14 0c0 6-7 12.5-7 12.5Z"/><path d="M12 12a2.5 2.5 0 0 0 0-5 2.5 2.5 0 0 0 0 5Z"/></svg>
-        <svg id="icon-mamin" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M16 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M8 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M20 16.5v-3.4a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 1-.4-.5v-1.6a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 1-.4-.5V6.6a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 0-.8 0l-2.7.9a.6.6 0 0 0-.4.5v1.6a.6.6 0 0 1-.4.5l-2.7.9a.6.6 0 0 0-.4.5v3.4a.6.6 0 0 0 .4.5l2.7.9a.6.6 0 0 1 .4.5v1.6a.6.6 0 0 0 .4.5l2.7.9a.6.6 0 0 1 .8 0l2.7-.9a.6.6 0 0 0 .4-.5v-1.6a.6.6 0 0 1 .4-.5l2.7-.9a.6.6 0 0 0 .4-.5Z"/></svg>
+        <svg id="icon-mamin" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M16 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M8 12.5a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1v1a.5.5 0 0 0 0 1"/><path d="M20 16.5v-3.4a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 1-.4-.5v-1.6a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 1-.4-.5V6.6a.6.6 0 0 0-.4-.5l-2.7-.9a.6.6 0 0 0-.8 0l-2.7.9a.6.6 0 0 0-.4.5v1.6a.6.6 0 0 1-.4.5l-2.7.9a.6.6 0 0 0-.4.5v3.4a.6.6 0 0 0 .4.5l2.7.9a.6.6 0 0 1 .4.5v1.6a.6.6 0 0 0 .4.5l2.7.9a.6.6 0 0 1 .8 0l2.7-.9a.6.6 0 0 0 .4-.5v-1.6a.6.6 0 0 1 .4-.5l2.7-.9a.6.6 0 0 0 .4-.5Z"/></svg>
       </defs>
     </svg>
 
@@ -608,7 +646,7 @@
     <script>
         // --- KONFIGURASI GOOGLE SHEET & AUTO REFRESH ---
         // PENTING: GANTI URL DI BAWAH DENGAN LINK EDIT SPREADSHEET ANDA
-        const SPREADSHEET_EDIT_URL = 'https://docs.google.com/spreadsheets/d/1nAfNwLm7H36wDVadU_8AbZNSpIKz9IE-TM-VyJe3Lyc/edit?gid=2028943161#gid=2028943161'; 
+        const SPREADSHEET_EDIT_URL = 'https://docs.google.com/spreadsheets'; 
 
         const SURVEYS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV7Yuu82zCho9LP8-w2M7KdcHesZMG2ZkE0h7luPscpkbYYgqC1HVmE9f95zT17Wy3Z3ktg3g5h0ks/pub?gid=0&single=true&output=csv';
         const SAMPEL_CSV_URL =  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV7Yuu82zCho9LP8-w2M7KdcHesZMG2ZkE0h7luPscpkbYYgqC1HVmE9f95zT17Wy3Z3ktg3g5h0ks/pub?gid=1637428951&single=true&output=csv';
@@ -620,7 +658,7 @@
         const REFRESH_INTERVAL_MS = 180000; 
         
         // --- GLOBAL STATE & DATA ---
-        let currentMainView = 'monitoring'; // 'monitoring', 'snapshot', atau 'directory'
+        let currentMainView = 'monitoring'; // 'monitoring', 'snapshot', 'directory', 'calendar'
         
         // Data Monitoring
         let allSurveysData = [];
@@ -682,7 +720,8 @@
         const refreshIcon = document.getElementById('refresh-icon'); 
         const monitoringViewBtn = document.getElementById('monitoring-view-btn');
         const snapshotViewBtn = document.getElementById('snapshot-view-btn');
-        const directoryViewBtn = document.getElementById('directory-view-btn'); // Tombol baru
+        const directoryViewBtn = document.getElementById('directory-view-btn');
+        const calendarViewBtn = document.getElementById('calendar-view-btn'); // Tombol baru
 
         // --- ELEMEN DOM (Snapshot) ---
         const snapshotView = document.getElementById('snapshot-view');
@@ -695,6 +734,11 @@
         const directorySearchInput = document.getElementById('directory-search-input');
         const directoryCountBadge = document.getElementById('directory-count-badge');
         const directoryEmptyState = document.getElementById('directory-empty-state');
+
+        // --- ELEMEN DOM (Kalender Kegiatan) ---
+        const calendarView = document.getElementById('calendar-view');
+        const calendarContainer = document.getElementById('calendar-container');
+        const calendarCategorySelect = document.getElementById('calendar-category-select'); // New Element
 
         // Elemen Kartu Fixed
         const floatingSummaryCard = document.getElementById('floating-summary');
@@ -1118,11 +1162,13 @@
             monitoringViewBtn.classList.remove('active');
             snapshotViewBtn.classList.remove('active');
             directoryViewBtn.classList.remove('active');
+            calendarViewBtn.classList.remove('active'); // New
             
             // Hide All Views
             monitoringView.classList.add('hidden');
             snapshotView.classList.add('hidden');
             directoryView.classList.add('hidden');
+            calendarView.classList.add('hidden'); // New
 
             if (viewName === 'monitoring') {
                 monitoringView.classList.remove('hidden');
@@ -1132,6 +1178,10 @@
                 directoryView.classList.remove('hidden');
                 directoryViewBtn.classList.add('active');
                 renderSampleDirectory();
+            } else if (viewName === 'calendar') {
+                calendarView.classList.remove('hidden');
+                calendarViewBtn.classList.add('active');
+                renderCalendarView();
             } else if (viewName === 'snapshot') {
                 snapshotView.classList.remove('hidden');
                 snapshotViewBtn.classList.add('active');
@@ -1156,6 +1206,7 @@
                 monitoringView.classList.add('hidden');
                 snapshotView.classList.add('hidden');
                 directoryView.classList.add('hidden');
+                calendarView.classList.add('hidden');
             }
         }
 
@@ -1167,6 +1218,7 @@
             monitoringView.classList.add('hidden');
             snapshotView.classList.add('hidden');
             directoryView.classList.add('hidden');
+            calendarView.classList.add('hidden');
         }
 
         // --- FUNGSI RENDER (MONITORING) ---
@@ -1677,6 +1729,110 @@
             }
         }
 
+        // --- FUNGSI RENDER (KALENDER KEGIATAN - MODIFIED) ---
+        function renderCalendarView() {
+            if (currentMainView !== 'calendar') return;
+            
+            calendarContainer.innerHTML = '';
+            
+            if (allSurveysData.length === 0) {
+                calendarContainer.innerHTML = `<p class="text-gray-500 text-center mt-12">Data survei tidak tersedia untuk kalender.</p>`;
+                return;
+            }
+
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            const selectedCategory = calendarCategorySelect.value; // Get current selected category from dropdown
+
+            // Determine which categories to show
+            let categoriesToShow = MAIN_CATEGORIES;
+            if (selectedCategory !== 'all') {
+                categoriesToShow = [selectedCategory];
+            }
+
+            // Loop per kategori
+            categoriesToShow.forEach(category => {
+                const surveysInCat = allSurveysData.filter(s => s.kategori === category);
+                if (surveysInCat.length === 0) return;
+
+                const colors = getCategoryColors(category);
+                
+                const categorySection = document.createElement('div');
+                categorySection.className = 'mb-10 bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden';
+                
+                // Category Header
+                let headerHtml = `
+                    <div class="px-6 py-4 bg-${colors.lightBg} border-b border-gray-200 flex items-center gap-3">
+                        <div class="p-2 rounded-lg bg-white text-${colors.primary} shadow-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <use href="#${getCategoryIcon(category)}"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800">${category}</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <div class="min-w-[800px]"> <!-- Ensure min width for scrolling -->
+                            <!-- Table Header (Months) -->
+                            <div class="flex border-b border-gray-200 bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                <div class="w-1/4 px-6 py-3 border-right border-gray-200 sticky left-0 bg-gray-50 z-10 shadow-r">Nama Kegiatan</div>
+                                <div class="w-3/4 flex">
+                                    ${monthNames.map(m => `<div class="calendar-cell py-3 text-center border-r border-gray-200">${m}</div>`).join('')}
+                                </div>
+                            </div>
+                `;
+
+                // Survey Rows
+                let rowsHtml = '';
+                surveysInCat.forEach(survey => {
+                    // Parse months. Assuming 'bulan_mulai' & 'bulan_selesai' are 1-12.
+                    const startMonth = parseInt(survey.bulan_mulai, 10);
+                    const endMonth = parseInt(survey.bulan_selesai, 10);
+                    
+                    let timelineHtml = '';
+                    
+                    if (isNaN(startMonth) || isNaN(endMonth) || startMonth > endMonth) {
+                        // Invalid date range fallback
+                        timelineHtml = monthNames.map(() => `<div class="calendar-cell bg-gray-50"></div>`).join('');
+                    } else {
+                        timelineHtml = monthNames.map((_, index) => {
+                            const currentMonth = index + 1; // 1-based index
+                            const isActive = currentMonth >= startMonth && currentMonth <= endMonth;
+                            // Check if it's the start, middle, or end for rounded corners
+                            let bgClass = isActive ? `bg-${colors.primary}` : '';
+                            let opacityClass = isActive ? 'opacity-80' : '';
+                            
+                            // Special styling for bar
+                            let content = '';
+                            if (isActive) {
+                                let roundedClass = '';
+                                if (currentMonth === startMonth) roundedClass += ' rounded-l-md ml-1';
+                                if (currentMonth === endMonth) roundedClass += ' rounded-r-md mr-1';
+                                if (currentMonth > startMonth && currentMonth < endMonth) roundedClass = ''; // Middle blocks are square-ish but connected visually
+                                
+                                content = `<div class="h-3 w-full ${bgClass} ${opacityClass} ${roundedClass} shadow-sm"></div>`;
+                            }
+                            
+                            return `<div class="calendar-cell flex items-center justify-center p-1 border-r border-gray-100">${content}</div>`;
+                        }).join('');
+                    }
+
+                    rowsHtml += `
+                        <div class="flex border-b border-gray-100 hover:bg-gray-50 transition-colors last:border-b-0">
+                            <div class="w-1/4 px-6 py-3 text-sm font-medium text-gray-700 truncate sticky left-0 bg-white z-10 border-r border-gray-200 shadow-r" title="${survey.nama}">
+                                ${survey.nama}
+                            </div>
+                            <div class="w-3/4 flex">
+                                ${timelineHtml}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                headerHtml += rowsHtml + `</div></div></div>`; // Close min-w div, overflow div, card div
+                categorySection.innerHTML = headerHtml;
+                calendarContainer.appendChild(categorySection);
+            });
+        }
+
         // --- FUNGSI RENDER (SNAPSHOT - REDESIGNED) ---
         
         function calculatePercentageChange(current, previous) {
@@ -1787,10 +1943,14 @@
             monitoringViewBtn.addEventListener('click', () => switchMainView('monitoring'));
             snapshotViewBtn.addEventListener('click', () => switchMainView('snapshot'));
             directoryViewBtn.addEventListener('click', () => switchMainView('directory')); 
+            calendarViewBtn.addEventListener('click', () => switchMainView('calendar')); 
             
             directorySearchInput.addEventListener('input', renderSampleDirectory);
 
             snapshotQuarterSelect.addEventListener('change', renderSnapshotView);
+            
+            // Event listener untuk filter kalender
+            calendarCategorySelect.addEventListener('change', renderCalendarView);
 
             closeModalBtn.addEventListener('click', closeModal);
             modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
@@ -1802,7 +1962,7 @@
             const modalTableContainer = document.getElementById('modal-sampel-container');
             const scrollAmount = 200;
 
-            if(modalTableContainer) { // Pastikan element ada
+            if(modalTableContainer) { 
                 document.getElementById('table-scroll-left').addEventListener('click', () => {
                     modalTableContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
                 });
@@ -1815,7 +1975,7 @@
             exportSummaryBtn.addEventListener('click', exportSurveySummaryToExcel);
             exportSampelBtn.addEventListener('click', () => {
                 const surveyId = exportSampelBtn.getAttribute('data-current-survey-id');
-                if (sampelTable) exportTableToExcel(sampelTable, `Data_Sampel_${surveyId}_${new Date().toISOString().slice(0, 10)}.csv`);
+                if (sampelTable) exportTableToExcel(sampelTable, `Data_Sampel_${surveyId}_${new Date().toISOString().slice(0, 10)}.xlsx`);
             });
             
             closeFloatingSummaryBtn.addEventListener('click', () => floatingSummaryCard.classList.add('hidden'));
