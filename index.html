@@ -1773,7 +1773,7 @@
                         <div class="min-w-[800px]"> <!-- Ensure min width for scrolling -->
                             <!-- Table Header (Months) -->
                             <div class="flex border-b border-gray-200 bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                <div class="w-1/4 px-6 py-3 border-right border-gray-200 sticky left-0 bg-gray-50 z-10 shadow-r">Nama Kegiatan</div>
+                                <div class="w-1/4 px-6 py-3 border-r border-gray-200 sticky left-0 bg-gray-50 z-10 shadow-r">Nama Kegiatan</div>
                                 <div class="w-3/4 flex">
                                     ${monthNames.map(m => `<div class="calendar-cell py-3 text-center border-r border-gray-200">${m}</div>`).join('')}
                                 </div>
@@ -1817,7 +1817,7 @@
 
                     rowsHtml += `
                         <div class="flex border-b border-gray-100 hover:bg-gray-50 transition-colors last:border-b-0">
-                            <div class="w-1/4 px-6 py-3 text-sm font-medium text-gray-700 truncate sticky left-0 bg-white z-10 border-r border-gray-200 shadow-r" title="${survey.nama}">
+                            <div class="w-1/4 px-6 py-3 text-sm font-medium text-gray-700 sticky left-0 bg-white z-10 border-r border-gray-200 shadow-r" title="${survey.nama}">
                                 ${survey.nama}
                             </div>
                             <div class="w-3/4 flex">
