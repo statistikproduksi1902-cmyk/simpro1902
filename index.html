@@ -1224,33 +1224,100 @@
         // --- FUNGSI RENDER (MONITORING) ---
         function createSearchDOM() {
             if (searchContainer) return;
-            searchInput = document.createElement('input');
-            searchInput.id = 'survey-search-input';
-            searchInput.type = 'text';
-            searchInput.placeholder = 'Cari nama survei atau deskripsi...';
-            searchInput.className = 'w-full p-3 pl-10 mb-6 border border-gray-300 rounded-xl shadow-inner focus:ring-orange-500 focus:border-orange-500 transition duration-150';
+            
             searchContainer = document.createElement('div');
-            searchContainer.className = 'relative hidden'; 
+            searchContainer.id = 'search-container-wrapper';
+            // UPDATE: Mengubah mb-8 menjadi mb-4 untuk mengurangi jarak ke bawah
+            searchContainer.className = 'hidden opacity-0 transition-opacity duration-300 ease-out mb-4'; 
+            
             searchContainer.innerHTML = `
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
+                <div class="max-w-2xl mx-auto px-4 md:px-0 relative group">
+                    <!-- Minimalist Input Wrapper -->
+                    <div class="relative flex items-center">
+                        
+                        <!-- Search Icon (Gray, turns Orange on focus) -->
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-300 group-focus-within:text-orange-600 text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+
+                        <!-- The Input: Clean, pill-shaped, subtle ring, no heavy shadow -->
+                        <input type="text" id="survey-search-input" 
+                            class="w-full py-3.5 pl-12 pr-12 bg-white text-gray-700 text-sm font-medium rounded-full 
+                                   border-none shadow-sm ring-1 ring-gray-200 
+                                   placeholder-gray-400
+                                   focus:ring-2 focus:ring-orange-500 focus:shadow-md outline-none transition-all duration-300"
+                            placeholder="Ketik kata kunci untuk memfilter..."
+                            autocomplete="off">
+                        
+                        <!-- Clear Button (Simple X, appears on type) -->
+                        <button id="clear-search-btn" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden text-gray-300 hover:text-red-500 transition-colors cursor-pointer outline-none transform active:scale-95" title="Hapus pencarian">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- Minimalist Helper Text -->
+                    <div class="text-center mt-2 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300">
+                        <span class="text-[10px] font-medium text-gray-400 bg-gray-50 px-2 py-0.5 rounded border border-gray-100">Tekan ESC untuk batal</span>
+                    </div>
                 </div>
             `;
-            searchContainer.appendChild(searchInput);
+            
             monitoringView.insertBefore(searchContainer, surveyListContainer);
-            searchInput.addEventListener('input', filterSurveys);
+            
+            // Re-assign references and add listeners
+            searchInput = document.getElementById('survey-search-input');
+            const clearBtn = document.getElementById('clear-search-btn');
+
+            // Input Listener
+            searchInput.addEventListener('input', (e) => {
+                filterSurveys();
+                if(e.target.value.length > 0) {
+                    clearBtn.classList.remove('hidden');
+                } else {
+                    clearBtn.classList.add('hidden');
+                }
+            });
+
+            // Clear Button Listener
+            clearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                filterSurveys();
+                clearBtn.classList.add('hidden');
+                searchInput.focus();
+            });
+
+            // Keyboard Shortcut Listener (Escape to clear)
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    searchInput.value = '';
+                    filterSurveys();
+                    clearBtn.classList.add('hidden');
+                    searchInput.blur();
+                }
+            });
         }
         
         function setMonitoringView(categoryName) {
             currentViewCategory = categoryName;
             if (categoryName !== null) {
+                // Show search with animation
                 searchContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    searchContainer.classList.remove('opacity-0');
+                }, 50); // Small delay for fade-in effect
+                
                 searchInput.value = ''; 
+                document.getElementById('clear-search-btn')?.classList.add('hidden');
                 filterSurveys(); 
             } else {
-                searchContainer.classList.add('hidden');
+                // Hide search with animation
+                searchContainer.classList.add('opacity-0');
+                setTimeout(() => {
+                    searchContainer.classList.add('hidden');
+                }, 300); // Wait for transition
             }
             renderMainView();
             updateExportButtonVisibility(); 
