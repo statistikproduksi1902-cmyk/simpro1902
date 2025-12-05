@@ -110,16 +110,11 @@
 </head>
 <body class="min-h-screen text-gray-800">
 
-    <!-- OVERLAY SIDEBAR (Backdrop) - Hanya muncul di mobile (md:hidden) -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300 backdrop-blur-sm md:hidden"></div>
+    <!-- OVERLAY SIDEBAR (Backdrop) -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300 backdrop-blur-sm"></div>
 
     <!-- SIDEBAR NAVIGASI (POP UP KIRI - ORANGE) -->
-    <!-- 
-        Perubahan: 
-        1. md:translate-x-0: Sidebar selalu terlihat (tidak tergeser) pada layar medium ke atas.
-        2. transform -translate-x-full: Default tersembunyi di mobile.
-    -->
-    <aside id="sidebar" class="fixed top-0 left-0 z-50 h-full w-72 bg-gradient-to-b from-orange-600 to-orange-700 shadow-2xl transform -translate-x-full md:translate-x-0 transition-transform duration-300 overflow-y-auto">
+    <aside id="sidebar" class="fixed top-0 left-0 z-50 h-full w-72 bg-gradient-to-b from-orange-600 to-orange-700 shadow-2xl transform -translate-x-full overflow-y-auto">
         <!-- Header Sidebar -->
         <div class="p-6 border-b border-orange-500 flex justify-between items-center">
             <div class="flex items-center space-x-3">
@@ -130,8 +125,7 @@
                 </div>
                 <span class="text-xl font-bold text-white tracking-tight">Menu</span>
             </div>
-            <!-- Tombol Close Sidebar (Hanya muncul di mobile: md:hidden) -->
-            <button id="close-sidebar-btn" class="text-orange-200 hover:text-white transition-colors focus:outline-none md:hidden">
+            <button id="close-sidebar-btn" class="text-orange-200 hover:text-white transition-colors focus:outline-none">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -182,15 +176,15 @@
         </nav>
     </aside>
 
-    <!-- Header (Dimodifikasi: md:left-72 agar tidak tertutup sidebar di desktop) -->
-    <header class="bg-white shadow-md fixed top-0 right-0 left-0 md:left-72 z-30 border-b border-gray-100 transition-all duration-300">
+    <!-- Header (Dimodifikasi untuk Tombol Hamburger & Fixed Position) -->
+    <header class="bg-white shadow-md fixed top-0 w-full z-30 border-b border-gray-100 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             
             <div class="flex justify-between items-center">
                 
                 <div class="flex items-center gap-4">
-                    <!-- TOMBOL HAMBURGER (Hanya muncul di mobile: md:hidden) -->
-                    <button id="open-sidebar-btn" class="md:hidden p-2 -ml-2 rounded-lg text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500">
+                    <!-- TOMBOL HAMBURGER (PEMICU SIDEBAR) -->
+                    <button id="open-sidebar-btn" class="p-2 -ml-2 rounded-lg text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
@@ -228,8 +222,8 @@
         </div>
     </header>
 
-    <!-- Konten Utama (Dimodifikasi: md:ml-72 agar bergeser ke kanan di desktop) -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 md:ml-72 transition-all duration-300" id="main-content">
+    <!-- Konten Utama (Ditambah padding top pt-24 agar tidak tertutup header fixed) -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 transition-all duration-300" id="main-content">
         
         <!-- Indikator Loading Global -->
         <div id="loading-indicator" class="text-center py-16 bg-white rounded-xl shadow-md">
@@ -365,10 +359,10 @@
         
     </main>
     
-    <!-- Tombol Export Ringkasan Floating (Disesuaikan posisinya di desktop) -->
+    <!-- Tombol Export Ringkasan Floating -->
     <button id="export-summary-btn" 
             title="Export Ringkasan Survei ke Excel"
-            class="fixed bottom-4 left-4 md:left-80 
+            class="fixed bottom-4 left-4 
                    bg-green-600 hover:bg-green-700 text-white 
                    px-4 py-3 rounded-xl shadow-2xl transition duration-300 ease-in-out transform 
                    flex items-center space-x-2 z-50 hover:scale-[1.03] hidden">
@@ -1515,22 +1509,11 @@
             
             let surveys = allSurveysData.filter(s => s.kategori === category);
             
-            // LOGIKA PENGURUTAN DIPERBARUI (Status -> Tahun Desc -> Bulan Asc -> Nama)
             surveys.sort((a, b) => {
-                // 1. Prioritas Status (Ascending: 1.Berjalan, 2.Selesai, 3.Belum)
                 if (a.status_priority !== b.status_priority) return a.status_priority - b.status_priority;
-                
-                // 2. Tahun Kegiatan (Descending: Tahun Besar/Terbaru di atas)
-                const yearA = parseInt(a.tahun_kegiatan, 10) || 0;
-                const yearB = parseInt(b.tahun_kegiatan, 10) || 0;
-                if (yearA !== yearB) return yearB - yearA;
-
-                // 3. Bulan Mulai (Ascending: Jan ke Des)
                 const monthA = parseInt(a.bulan_mulai, 10) || 99;
                 const monthB = parseInt(b.bulan_mulai, 10) || 99;
                 if (monthA !== monthB) return monthA - monthB;
-                
-                // 4. Nama (Abjad)
                 return a.nama.localeCompare(b.nama);
             });
             
